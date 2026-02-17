@@ -17,6 +17,9 @@ export const productService = {
     update: async (id: number, data: ProductCreate) => {
         const response = await api.put<Product>(`/products/${id}`, data);
         return response.data;
+    },
+    delete: async (id: number) => {
+        await api.delete(`/products/${id}`);
     }
 };
 
