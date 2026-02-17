@@ -21,6 +21,18 @@ const ProductList = () => {
         fetchProducts();
     }, []);
 
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Tem certeza que deseja excluir este produto?")) {
+            try {
+                await productService.delete(id);
+                setProducts(products.filter(p => p.id !== id));
+            } catch (error) {
+                console.error("Failed to delete product:", error);
+                alert("Erro ao excluir produto.");
+            }
+        }
+    };
+
     if (loading) return <div>Carregando produtos...</div>;
 
     return (
@@ -58,13 +70,19 @@ const ProductList = () => {
                                     Tipo: {product.product_type}
                                 </div>
                             </div>
-                            <div className="mt-4">
+                            <div className="mt-4 flex space-x-2">
                                 <Link
                                     to={`/products/${product.id}`}
-                                    className="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
                                     Editar
                                 </Link>
+                                <button
+                                    onClick={() => handleDelete(product.id)}
+                                    className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                >
+                                    Excluir
+                                </button>
                             </div>
                         </div>
                     </div>
