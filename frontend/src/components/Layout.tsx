@@ -1,6 +1,8 @@
 import { Link, Outlet } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const Layout = () => {
+    const { cartItems } = useCart();
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <header className="bg-white shadow">
@@ -10,6 +12,14 @@ const Layout = () => {
                         <Link to="/" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
                         <Link to="/products" className="text-gray-600 hover:text-gray-900">Produtos</Link>
                         <Link to="/categories" className="text-gray-600 hover:text-gray-900">Categorias</Link>
+                        <Link to="/cart" className="text-gray-600 hover:text-gray-900 flex items-center">
+                            Carrinho
+                            {cartItems.length > 0 && (
+                                <span className="ml-1 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs">
+                                    {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                                </span>
+                            )}
+                        </Link>
                     </nav>
                 </div>
             </header>

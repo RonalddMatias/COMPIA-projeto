@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { Product } from '../types';
 import { productService } from '../services/dataService';
+import { useCart } from '../context/CartContext';
 
 const ProductList = () => {
+    const { addToCart } = useCart();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -68,6 +70,14 @@ const ProductList = () => {
                                 </div>
                                 <div className="mt-1 text-xs text-cool-gray-500">
                                     Tipo: {product.product_type}
+                                </div>
+                                <div className="mt-2 text-right">
+                                    <button
+                                        onClick={() => addToCart(product)}
+                                        className="text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded-full font-medium"
+                                    >
+                                        + Carrinho
+                                    </button>
                                 </div>
                             </div>
                             <div className="mt-4 flex space-x-2">
