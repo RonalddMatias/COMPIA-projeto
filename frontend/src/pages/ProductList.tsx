@@ -74,9 +74,13 @@ const ProductList = () => {
                                 <div className="mt-2 text-right">
                                     <button
                                         onClick={() => addToCart(product)}
-                                        className="text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded-full font-medium"
+                                        disabled={product.stock_quantity === 0}
+                                        className={`text-sm px-3 py-1 rounded-full font-medium ${product.stock_quantity > 0
+                                                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            }`}
                                     >
-                                        + Carrinho
+                                        {product.stock_quantity > 0 ? '+ Carrinho' : 'Esgotado'}
                                     </button>
                                 </div>
                             </div>

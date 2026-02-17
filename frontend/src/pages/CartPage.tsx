@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 const CartPage = () => {
-    const { cartItems, removeFromCart, clearCart, getCartTotal } = useCart();
+    const { cartItems, removeFromCart, clearCart, getCartTotal, checkout } = useCart();
 
     if (cartItems.length === 0) {
         return (
@@ -62,6 +62,7 @@ const CartPage = () => {
                         Total: R$ {getCartTotal().toFixed(2)}
                     </p>
                     <button
+                        onClick={checkout}
                         className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow"
                     >
                         Finalizar Compra
