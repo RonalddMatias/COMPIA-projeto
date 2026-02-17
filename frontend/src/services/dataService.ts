@@ -20,6 +20,10 @@ export const productService = {
     },
     delete: async (id: number) => {
         await api.delete(`/products/${id}`);
+    },
+    checkout: async (items: { product_id: number; quantity: number }[]) => {
+        const response = await api.post('/orders/checkout', { items });
+        return response.data;
     }
 };
 
