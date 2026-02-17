@@ -1,95 +1,107 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { categoryService } from '../services/dataService';
 
 const CategoryForm = () => {
     const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: '',
-        slug: '',
-        description: ''
-    });
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const { id } = useParams();
+    const isEditMode = !!id;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
+    const [name, setName] = useState('');
+    const [imageUrl, setImageUrl] = useState('');
+    const [description, setDescription] = useState('');
+
+    useEffect(() => {
+        if (isEditMode) {
+            const fetchCategory = async () => {
+                try {
+                    // We fetch all and find because we don't have getById yet.
+                    // This is acceptable for now.
+                    const categories = await categoryService.getAll();
+                    const category = categories.find(c => c.id === Number(id));
+                    if (category) {
+                        setName(category.name);
+                        setImageUrl(category.image_url || '');
+                        setDescription(category.description || '');
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch category:", error);
+                }
+            };
+            fetchCategory();
+        }
+    }, [isEditMode, id]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
-
         try {
-            await categoryService.create(formData);
+            if (isEditMode) {
+                await categoryService.update(Number(id), { name, image_url: imageUrl, description });
+                alert("Categoria atualizada com sucesso!");
+            } else {
+                await categoryService.create({ name, image_url: imageUrl, description });
+                alert("Categoria criada com sucesso!");
+            }
             navigate('/categories');
-        } catch (err) {
-            console.error(err);
-            setError("Erro ao salvar categoria. Verifique se o slug já existe.");
-        } finally {
-            setLoading(false);
+        } catch (error) {
+            console.error("Failed to save category:", error);
+            alert("Erro ao salvar categoria.");
         }
     };
 
     return (
-        <div className="max-w-2xl mx-auto bg-white p-8 shadow rounded">
-            <h2 className="text-2xl font-bold mb-6">Nova Categoria</h2>
+        <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">{isEditMode ? 'Editar Categoria' : 'Nova Categoria'}</h2>
 
-            {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6 bg-white shadow sm:rounded-lg p-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Nome</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome</label>
                     <input
                         type="text"
-                        name="name"
+                        id="name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         required
-                        value={formData.name}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Slug (URL amigável)</label>
+                    <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">URL da Imagem de Capa</label>
                     <input
-                        type="text"
-                        name="slug"
-                        required
-                        value={formData.slug}
-                        onChange={handleChange}
-                        placeholder="ex: inteligencia-artificial"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2"
+                        type="url"
+                        id="imageUrl"
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        placeholder="https://exemplo.com/imagem.jpg"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Descrição</label>
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Descrição</label>
                     <textarea
-                        name="description"
-                        value={formData.description}
-                        onChange={handleChange}
+                        id="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         rows={3}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 border p-2"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                 </div>
 
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-end space-x-3">
                     <button
                         type="button"
                         onClick={() => navigate('/categories')}
-                        className="mr-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded"
+                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
-                        disabled={loading}
-                        className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+                        className="bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
-                        {loading ? 'Salvando...' : 'Salvar'}
+                        Salvar
                     </button>
                 </div>
             </form>
