@@ -21,6 +21,19 @@ const CategoryList = () => {
         fetchCategories();
     }, []);
 
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Tem certeza que deseja excluir esta categoria?")) {
+            try {
+                await categoryService.delete(id);
+                setCategories(categories.filter(c => c.id !== id));
+            } catch (error: any) {
+                console.error("Failed to delete category:", error);
+                const message = error.response?.data?.detail || "Erro ao excluir categoria.";
+                alert(message);
+            }
+        }
+    };
+
     if (loading) return <div>Carregando categorias...</div>;
 
     return (
@@ -32,31 +45,55 @@ const CategoryList = () => {
                 </Link>
             </div>
 
-            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {categories.map((category) => (
-                            <tr key={category.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{category.name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.slug}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.description}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <span className="text-gray-400">Editar (WIP)</span>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {categories.map((category) => (
+                    <div key={category.id} className="bg-white overflow-hidden shadow rounded-lg flex flex-col p-6 hover:shadow-lg transition-shadow duration-300 relative group">
+                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                                onClick={() => handleDelete(category.id)}
+                                className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full"
+                                title="Excluir Categoria"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div className="h-40 w-full bg-gray-100 rounded mb-4 flex items-center justify-center overflow-hidden">
+                            {category.image_url ? (
+                                <img src={category.image_url} alt={category.name} className="h-full w-full object-cover" />
+                            ) : (
+                                <span className="text-gray-400 text-sm">Sem imagem</span>
+                            )}
+                        </div>
+
+                        <div className="flex-1">
+                            <h3 className="text-xl font-semibold text-gray-900 mb-2">{category.name}</h3>
+                            <p className="text-sm text-gray-500 mb-4 line-clamp-2">{category.description || "Sem descrição"}</p>
+                        </div>
+                        <div className="mt-4 flex space-x-3">
+                            <Link
+                                to={`/products?category_id=${category.id}`}
+                                className="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded"
+                            >
+                                Ver Produtos
+                            </Link>
+                            <Link
+                                to={`/categories/edit/${category.id}`}
+                                className="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded"
+                            >
+                                Editar
+                            </Link>
+                        </div>
+                    </div>
+                ))}
+
                 {categories.length === 0 && (
-                    <div className="p-4 text-center text-gray-500">Nenhuma categoria encontrada.</div>
+                    <div className="col-span-full p-12 text-center text-gray-500 bg-white rounded-lg shadow">
+                        <p className="text-lg">Nenhuma categoria encontrada.</p>
+                        <p className="text-sm mt-2">Clique em "Nova Categoria" para começar.</p>
+                    </div>
                 )}
             </div>
         </div>

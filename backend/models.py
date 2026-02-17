@@ -14,7 +14,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
-    slug = Column(String, unique=True, nullable=False)
+    image_url = Column(String, nullable=True)
     description = Column(Text, nullable=True)
 
     products = relationship("Product", back_populates="category")

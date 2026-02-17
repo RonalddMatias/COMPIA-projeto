@@ -2,8 +2,9 @@ import api from './api';
 import type { Product, ProductCreate, Category } from '../types';
 
 export const productService = {
-    getAll: async () => {
-        const response = await api.get<Product[]>('/products/');
+    getAll: async (categoryId?: number) => {
+        const params = categoryId ? { category_id: categoryId } : {};
+        const response = await api.get<Product[]>('/products/', { params });
         return response.data;
     },
     create: async (data: ProductCreate) => {
@@ -35,5 +36,12 @@ export const categoryService = {
     create: async (data: Omit<Category, 'id'>) => {
         const response = await api.post<Category>('/categories/', data);
         return response.data;
+    },
+    update: async (id: number, data: Omit<Category, 'id'>) => {
+        const response = await api.put<Category>(`/categories/${id}`, data);
+        return response.data;
+    },
+    delete: async (id: number) => {
+        await api.delete(`/categories/${id}`);
     }
 };

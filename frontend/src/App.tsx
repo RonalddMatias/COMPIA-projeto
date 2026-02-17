@@ -21,6 +21,7 @@ function App() {
             <Route path="products/:id" element={<ProductForm />} />
             <Route path="categories" element={<CategoryList />} />
             <Route path="categories/new" element={<CategoryForm />} />
+            <Route path="categories/edit/:id" element={<CategoryForm />} />
             <Route path="cart" element={<CartPage />} />
           </Route>
         </Routes>

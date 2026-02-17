@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import type { Product } from '../types';
 import { productService } from '../services/dataService';
 import { useCart } from '../context/CartContext';
@@ -8,11 +8,14 @@ const ProductList = () => {
     const { addToCart } = useCart();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchParams] = useSearchParams();
+    const categoryId = searchParams.get('category_id');
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const data = await productService.getAll();
+                const id = categoryId ? Number(categoryId) : undefined;
+                const data = await productService.getAll(id);
                 setProducts(data);
             } catch (error) {
                 console.error("Failed to fetch products:", error);
@@ -21,7 +24,7 @@ const ProductList = () => {
             }
         };
         fetchProducts();
-    }, []);
+    }, [categoryId]);
 
     const handleDelete = async (id: number) => {
         if (window.confirm("Tem certeza que deseja excluir este produto?")) {
@@ -40,7 +43,17 @@ const ProductList = () => {
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Produtos</h2>
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Produtos</h2>
+                    {categoryId && (
+                        <div className="mt-1 flex items-center text-sm text-gray-500">
+                            <span>Filtrando por categoria (ID: {categoryId})</span>
+                            <Link to="/products" className="ml-2 text-indigo-600 hover:text-indigo-800">
+                                Limpar filtro
+                            </Link>
+                        </div>
+                    )}
+                </div>
                 <Link to="/products/new" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                     Novo Produto
                 </Link>
@@ -76,8 +89,8 @@ const ProductList = () => {
                                         onClick={() => addToCart(product)}
                                         disabled={product.stock_quantity === 0}
                                         className={`text-sm px-3 py-1 rounded-full font-medium ${product.stock_quantity > 0
-                                                ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            ? 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                                             }`}
                                     >
                                         {product.stock_quantity > 0 ? '+ Carrinho' : 'Esgotado'}

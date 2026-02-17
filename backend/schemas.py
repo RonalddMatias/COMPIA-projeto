@@ -11,7 +11,7 @@ class ProductType(str, Enum):
 # Category Schemas
 class CategoryBase(BaseModel):
     name: str
-    slug: str
+    image_url: Optional[str] = None
     description: Optional[str] = None
 
 class CategoryCreate(CategoryBase):

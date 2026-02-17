@@ -23,9 +23,16 @@ def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)
     return db_product
 
 @router.get("/", response_model=List[schemas.Product])
-def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    products = db.query(models.Product).offset(skip).limit(limit).all()
-    return products
+def read_products(
+    skip: int = 0, 
+    limit: int = 100, 
+    category_id: int = None, 
+    db: Session = Depends(get_db)
+):
+    query = db.query(models.Product)
+    if category_id:
+        query = query.filter(models.Product.category_id == category_id)
+    return query.offset(skip).limit(limit).all()
 
 @router.get("/{product_id}", response_model=schemas.Product)
 def read_product(product_id: int, db: Session = Depends(get_db)):
