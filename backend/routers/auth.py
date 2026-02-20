@@ -153,3 +153,23 @@ async def activate_user(
     db.refresh(user)
     
     return user
+
+@router.put("/me/password", response_model=dict)
+async def change_password(
+    password_data: schemas.PasswordChange,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.get_current_active_user)
+):
+    """Changes the current user's password"""
+    # Verify current password
+    if not auth.verify_password(password_data.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect current password"
+        )
+    
+    # Update to new password
+    current_user.hashed_password = auth.get_password_hash(password_data.new_password)
+    db.commit()
+    
+    return {"message": "Password changed successfully"}
