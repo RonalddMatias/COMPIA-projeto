@@ -5,21 +5,19 @@ import { useAuth } from '../context/AuthContext';
 const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
         setLoading(true);
 
         try {
             await login({ username, password });
             navigate('/products');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Erro ao fazer login. Verifique suas credenciais.');
+            alert('Usuário ou senha incorretos. Por favor, verifique suas credenciais.');
         } finally {
             setLoading(false);
         }
@@ -37,11 +35,6 @@ const LoginPage = () => {
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    {error && (
-                        <div className="rounded-md bg-red-50 p-4">
-                            <div className="text-sm text-red-800">{error}</div>
-                        </div>
-                    )}
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label htmlFor="username" className="sr-only">
