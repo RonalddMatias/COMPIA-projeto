@@ -26,15 +26,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verifica se a senha corresponde ao hash"""
+    """Verifies if password matches the hash"""
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
-    """Gera hash da senha"""
+    """Generates password hash"""
     return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    """Cria um token JWT"""
+    """Creates a JWT token"""
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -46,7 +46,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     return encoded_jwt
 
 def authenticate_user(db: Session, username: str, password: str) -> Optional[models.User]:
-    """Autentica um usuário"""
+    """Authenticates a user"""
     user = db.query(models.User).filter(models.User.username == username).first()
     if not user:
         return None
@@ -58,10 +58,10 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> models.User:
-    """Obtém o usuário atual a partir do token JWT"""
+    """Gets the current user from JWT token"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Não foi possível validar as credenciais",
+        detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     
@@ -83,36 +83,36 @@ async def get_current_user(
 async def get_current_active_user(
     current_user: models.User = Depends(get_current_user)
 ) -> models.User:
-    """Verifica se o usuário está ativo"""
+    """Verifies if user is active"""
     if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Usuário inativo")
+        raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 # Role-based authorization dependencies
 async def require_admin(
     current_user: models.User = Depends(get_current_active_user)
 ) -> models.User:
-    """Requer que o usuário seja admin"""
+    """Requires user to be admin"""
     if current_user.role != models.UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Permissões insuficientes. Apenas administradores podem acessar este recurso."
+            detail="Insufficient permissions. Only administrators can access this resource."
         )
     return current_user
 
 async def require_editor_or_admin(
     current_user: models.User = Depends(get_current_active_user)
 ) -> models.User:
-    """Requer que o usuário seja editor ou admin"""
+    """Requires user to be editor or admin"""
     if current_user.role not in [models.UserRole.ADMIN, models.UserRole.EDITOR]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Permissões insuficientes. Apenas editores e administradores podem acessar este recurso."
+            detail="Insufficient permissions. Only editors and administrators can access this resource."
         )
     return current_user
 
 async def require_any_role(
     current_user: models.User = Depends(get_current_active_user)
 ) -> models.User:
-    """Requer que o usuário esteja autenticado (qualquer role)"""
+    """Requires user to be authenticated (any role)"""
     return current_user

@@ -1,8 +1,8 @@
 """
-Script para criar o primeiro usuário administrador do sistema.
-Execute este script após iniciar o banco de dados.
+Script to create the first administrator user in the system.
+Run this script after starting the database.
 
-Uso:
+Usage:
     python create_admin.py
 """
 
@@ -12,29 +12,29 @@ from models import User, UserRole
 from auth import get_password_hash
 
 def create_admin_user():
-    """Cria o primeiro usuário administrador"""
+    """Creates the first administrator user"""
     
-    # Cria as tabelas se não existirem
+    # Create tables if they don't exist
     Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
     
     try:
-        # Verifica se já existe um admin
+        # Check if admin already exists
         admin_exists = db.query(User).filter(User.role == UserRole.ADMIN).first()
         
         if admin_exists:
-            print("Já existe um usuário administrador no sistema!")
+            print("An administrator user already exists in the system!")
             print(f"   Username: {admin_exists.username}")
             print(f"   Email: {admin_exists.email}")
             return
         
-        # Dados do admin padrão
+        # Default admin data
         admin_username = "admin"
         admin_email = "admin@compia.com.br"
         admin_password = "admin123"
         
-        # Cria o usuário admin
+        # Create admin user
         admin_user = User(
             username=admin_username,
             email=admin_email,
@@ -47,14 +47,14 @@ def create_admin_user():
         db.commit()
         db.refresh(admin_user)
         
-        print("Usuário administrador criado com sucesso!")
+        print("Administrator user created successfully!")
         print(f"   Username: {admin_username}")
         print(f"   Email: {admin_email}")
-        print(f"   Senha: {admin_password}")
-        print("\nIMPORTANTE: Mude esta senha após o primeiro login!")
+        print(f"   Password: {admin_password}")
+        print("\nIMPORTANT: Change this password after first login!")
         
     except Exception as e:
-        print(f"Erro ao criar usuário administrador: {e}")
+        print(f"Error creating administrator user: {e}")
         db.rollback()
     finally:
         db.close()

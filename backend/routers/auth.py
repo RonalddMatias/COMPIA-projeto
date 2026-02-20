@@ -14,27 +14,27 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 @router.post("/register", response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def register(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     """
-    Registra um novo usuário.
-    Por padrão, novos usuários têm role 'cliente'.
-    Apenas admins podem criar usuários com outras roles (admin, editor, vendedor).
+    Registers a new user.
+    By default, new users have 'cliente' role.
+    Only admins can create users with other roles (admin, editor, vendedor).
     """
-    # Verifica se username já existe
+    # Check if username already exists
     db_user = db.query(models.User).filter(models.User.username == user_data.username).first()
     if db_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Nome de usuário já registrado"
+            detail="Username already registered"
         )
     
-    # Verifica se email já existe
+    # Check if email already exists
     db_user = db.query(models.User).filter(models.User.email == user_data.email).first()
     if db_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email já registrado"
+            detail="Email already registered"
         )
     
-    # Cria novo usuário
+    # Create new user
     hashed_password = auth.get_password_hash(user_data.password)
     db_user = models.User(
         username=user_data.username,
@@ -56,24 +56,24 @@ def login(
     db: Session = Depends(get_db)
 ):
     """
-    Autentica um usuário e retorna um token JWT.
-    Use username e password para fazer login.
+    Authenticates a user and returns a JWT token.
+    Use username and password to login.
     """
     user = auth.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Usuário ou senha incorretos",
+            detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Usuário inativo"
+            detail="Inactive user"
         )
     
-    # Cria token JWT
+    # Create JWT token
     access_token_expires = timedelta(minutes=auth.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = auth.create_access_token(
         data={"sub": user.username, "role": user.role.value},
@@ -84,7 +84,7 @@ def login(
 
 @router.get("/me", response_model=schemas.User)
 async def get_me(current_user: models.User = Depends(auth.get_current_active_user)):
-    """Retorna os dados do usuário autenticado"""
+    """Returns the authenticated user data"""
     return current_user
 
 @router.get("/users", response_model=List[schemas.User])
@@ -92,7 +92,7 @@ async def list_users(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.require_admin)
 ):
-    """Lista todos os usuários (apenas admin)"""
+    """Lists all users (admin only)"""
     users = db.query(models.User).all()
     return users
 
@@ -103,10 +103,10 @@ async def update_user_role(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.require_admin)
 ):
-    """Atualiza o role de um usuário (apenas admin)"""
+    """Updates a user role (admin only)"""
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        raise HTTPException(status_code=404, detail="User not found")
     
     user.role = role
     db.commit()
@@ -120,15 +120,15 @@ async def deactivate_user(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.require_admin)
 ):
-    """Desativa um usuário (apenas admin)"""
+    """Deactivates a user (admin only)"""
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        raise HTTPException(status_code=404, detail="User not found")
     
     if user.id == current_user.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Você não pode desativar sua própria conta"
+            detail="You cannot deactivate your own account"
         )
     
     user.is_active = False
@@ -143,10 +143,10 @@ async def activate_user(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(auth.require_admin)
 ):
-    """Ativa um usuário (apenas admin)"""
+    """Activates a user (admin only)"""
     user = db.query(models.User).filter(models.User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+        raise HTTPException(status_code=404, detail="User not found")
     
     user.is_active = True
     db.commit()
