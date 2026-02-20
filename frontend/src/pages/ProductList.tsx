@@ -3,9 +3,11 @@ import { Link, useSearchParams } from 'react-router-dom';
 import type { Product } from '../types';
 import { productService } from '../services/dataService';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const ProductList = () => {
     const { addToCart } = useCart();
+    const { isEditor, isAdmin } = useAuth();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchParams] = useSearchParams();
@@ -54,9 +56,11 @@ const ProductList = () => {
                         </div>
                     )}
                 </div>
-                <Link to="/products/new" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Novo Produto
-                </Link>
+                {isEditor && (
+                    <Link to="/products/new" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Novo Produto
+                    </Link>
+                )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -97,20 +101,24 @@ const ProductList = () => {
                                     </button>
                                 </div>
                             </div>
-                            <div className="mt-4 flex space-x-2">
-                                <Link
-                                    to={`/products/${product.id}`}
-                                    className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Editar
-                                </Link>
-                                <button
-                                    onClick={() => handleDelete(product.id)}
-                                    className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                                >
-                                    Excluir
-                                </button>
-                            </div>
+                            {isEditor && (
+                                <div className="mt-4 flex space-x-2">
+                                    <Link
+                                        to={`/products/${product.id}`}
+                                        className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    >
+                                        Editar
+                                    </Link>
+                                    {isAdmin && (
+                                        <button
+                                            onClick={() => handleDelete(product.id)}
+                                            className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                                        >
+                                            Excluir
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -118,7 +126,6 @@ const ProductList = () => {
                 {products.length === 0 && (
                     <div className="col-span-full p-12 text-center text-gray-500">
                         <p className="text-lg">Nenhum produto encontrado.</p>
-                        <p className="text-sm">Clique em "Novo Produto" para começar.</p>
                     </div>
                 )}
             </div>

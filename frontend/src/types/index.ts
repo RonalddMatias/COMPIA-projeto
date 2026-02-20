@@ -36,3 +36,37 @@ export interface ProductCreate {
     product_type: ProductType;
     category_id: number;
 }
+
+// Auth Types
+export enum UserRole {
+    ADMIN = "admin",
+    EDITOR = "editor",
+    VENDEDOR = "vendedor",
+    CLIENTE = "cliente"
+}
+
+export interface User {
+    id: number;
+    username: string;
+    email: string;
+    role: UserRole;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface LoginRequest {
+    username: string;
+    password: string;
+}
+
+export interface RegisterRequest {
+    username: string;
+    email: string;
+    password: string;
+    role?: UserRole;
+}
+
+export interface AuthResponse {
+    access_token: string;
+    token_type: string;
+}
