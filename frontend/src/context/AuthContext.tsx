@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { User, LoginRequest, RegisterRequest } from '../types';
+import type { UserRole as UserRoleType } from '../types';
 import { UserRole } from '../types';
 import { authService } from '../services/authService';
 
@@ -11,7 +12,7 @@ interface AuthContextType {
     register: (data: RegisterRequest) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
-    hasRole: (roles: UserRole[]) => boolean;
+    hasRole: (roles: UserRoleType[]) => boolean;
     isAdmin: boolean;
     isEditor: boolean;
     isVendedor: boolean;
@@ -75,7 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(null);
     };
 
-    const hasRole = (roles: UserRole[]): boolean => {
+    const hasRole = (roles: UserRoleType[]): boolean => {
         return user ? roles.includes(user.role) : false;
     };
 

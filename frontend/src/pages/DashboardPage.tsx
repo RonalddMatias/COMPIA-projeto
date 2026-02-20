@@ -1,10 +1,54 @@
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { authService } from '../services/authService';
 
 const DashboardPage = () => {
     const { user, isEditor, isAdmin } = useAuth();
     const { cartItems } = useCart();
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+    const [passwordSuccess, setPasswordSuccess] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handlePasswordChange = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setPasswordError('');
+        setPasswordSuccess('');
+
+        if (newPassword !== confirmPassword) {
+            setPasswordError('New passwords do not match');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setPasswordError('New password must be at least 6 characters');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            await authService.changePassword(currentPassword, newPassword);
+            setPasswordSuccess('Password changed successfully!');
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setTimeout(() => {
+                setShowPasswordForm(false);
+                setPasswordSuccess('');
+            }, 2000);
+        } catch (err: any) {
+            setPasswordError(err.response?.data?.detail || 'Error changing password');
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     if (!user) {
         return (
@@ -147,8 +191,85 @@ const DashboardPage = () => {
 
             {/* Informações do usuário */}
             <div className="bg-white shadow rounded-lg p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Suas Informações</h3>
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium text-gray-900">Suas Informações</h3>
+                    <button
+                        onClick={() => setShowPasswordForm(!showPasswordForm)}
+                        className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                    >
+                        {showPasswordForm ? 'Cancel' : 'Change Password'}
+                    </button>
+                </div>
+
+                {showPasswordForm ? (
+                    <form onSubmit={handlePasswordChange} className="space-y-4">
+                        {passwordError && (
+                            <div className="rounded-md bg-red-50 p-4">
+                                <div className="text-sm text-red-800">{passwordError}</div>
+                            </div>
+                        )}
+                        {passwordSuccess && (
+                            <div className="rounded-md bg-green-50 p-4">
+                                <div className="text-sm text-green-800">{passwordSuccess}</div>
+                            </div>
+                        )}
+
+                        <div>
+                            <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">
+                                Current Password
+                            </label>
+                            <input
+                                id="currentPassword"
+                                type="password"
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
+                                New Password
+                            </label>
+                            <input
+                                id="newPassword"
+                                type="password"
+                                required
+                                minLength={6}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                                Confirm New Password
+                            </label>
+                            <input
+                                id="confirmPassword"
+                                type="password"
+                                required
+                                minLength={6}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="flex space-x-3">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            >
+                                {loading ? 'Changing...' : 'Change Password'}
+                            </button>
+                        </div>
+                    </form>
+                ) : (
+                    <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
                     <div>
                         <dt className="text-sm font-medium text-gray-500">Nome de usuário</dt>
                         <dd className="mt-1 text-sm text-gray-900">{user.username}</dd>
@@ -172,6 +293,7 @@ const DashboardPage = () => {
                         </dd>
                     </div>
                 </dl>
+                )}
             </div>
         </div>
     );
