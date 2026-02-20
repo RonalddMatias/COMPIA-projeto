@@ -4,6 +4,7 @@ from typing import List
 import database
 import models
 import schemas
+import auth
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -15,7 +16,11 @@ def get_db():
         db.close()
 
 @router.post("/checkout", response_model=schemas.OrderResponse)
-def checkout(order: schemas.OrderCreate, db: Session = Depends(get_db)):
+def checkout(
+    order: schemas.OrderCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.require_any_role)
+):
     total_amount = 0.0
     
     # Start a transaction explicitly? SQLAlchemy does this by default on commit, 

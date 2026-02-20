@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -7,6 +7,41 @@ class ProductType(str, Enum):
     PHYSICAL = "PHYSICAL"
     DIGITAL = "DIGITAL"
     KIT = "KIT"
+
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    EDITOR = "editor"
+    VENDEDOR = "vendedor"
+    CLIENTE = "cliente"
+
+# User Schemas
+class UserBase(BaseModel):
+    username: str
+    email: EmailStr
+    role: UserRole = UserRole.CLIENTE
+
+class UserCreate(UserBase):
+    password: str
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+class User(UserBase):
+    id: int
+    is_active: bool
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    role: Optional[str] = None
 
 # Category Schemas
 class CategoryBase(BaseModel):
