@@ -48,9 +48,7 @@ const Layout = () => {
                                 
                                 <Link to="/products" className="text-gray-600 hover:text-gray-900">Produtos</Link>
                                 
-                                {isEditor && (
-                                    <Link to="/categories" className="text-gray-600 hover:text-gray-900">Categorias</Link>
-                                )}
+                                <Link to="/categories" className="text-gray-600 hover:text-gray-900">Categorias</Link>
                                 
                                 {isAdmin && (
                                     <Link to="/users" className="text-gray-600 hover:text-gray-900">Usuários</Link>

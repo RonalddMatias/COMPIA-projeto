@@ -60,14 +60,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path="categories"
-                element={
-                  <ProtectedRoute allowedRoles={[UserRole.EDITOR, UserRole.ADMIN]}>
-                    <CategoryList />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="categories" element={<CategoryList />} />
               <Route
                 path="categories/new"
                 element={

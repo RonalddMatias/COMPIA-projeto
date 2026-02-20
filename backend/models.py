@@ -10,10 +10,10 @@ class ProductType(str, enum.Enum):
     KIT = "KIT"
 
 class UserRole(str, enum.Enum):
-    ADMIN = "admin"
-    EDITOR = "editor"
-    VENDEDOR = "vendedor"
-    CLIENTE = "cliente"
+    ADMIN = "ADMIN"
+    EDITOR = "EDITOR"
+    VENDEDOR = "VENDEDOR"
+    CLIENTE = "CLIENTE"
 
 class User(Base):
     __tablename__ = "users"

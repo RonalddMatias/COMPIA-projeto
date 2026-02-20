@@ -9,10 +9,10 @@ class ProductType(str, Enum):
     KIT = "KIT"
 
 class UserRole(str, Enum):
-    ADMIN = "admin"
-    EDITOR = "editor"
-    VENDEDOR = "vendedor"
-    CLIENTE = "cliente"
+    ADMIN = "ADMIN"
+    EDITOR = "EDITOR"
+    VENDEDOR = "VENDEDOR"
+    CLIENTE = "CLIENTE"
 
 # User Schemas
 class UserBase(BaseModel):

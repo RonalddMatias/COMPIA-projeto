@@ -38,12 +38,14 @@ export interface ProductCreate {
 }
 
 // Auth Types
-export enum UserRole {
-    ADMIN = "admin",
-    EDITOR = "editor",
-    VENDEDOR = "vendedor",
-    CLIENTE = "cliente"
-}
+export const UserRole = {
+    ADMIN: "ADMIN",
+    EDITOR: "EDITOR",
+    VENDEDOR: "VENDEDOR",
+    CLIENTE: "CLIENTE"
+} as const;
+
+export type UserRole = typeof UserRole[keyof typeof UserRole];
 
 export interface User {
     id: number;

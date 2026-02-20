@@ -1,6 +1,6 @@
 """
-Script de teste para o sistema de autenticação da API COMPIA.
-Testa login, criação de usuários e acesso com diferentes roles.
+Test script for COMPIA API authentication system.
+Tests login, user creation and access with different roles.
 """
 
 import requests
@@ -15,7 +15,7 @@ class APITester:
         self.current_user: Optional[Dict] = None
     
     def print_response(self, title: str, response: requests.Response):
-        """Imprime resposta de forma formatada"""
+        """Prints response in formatted way"""
         print(f"\n{'='*60}")
         print(f"{title}")
         print(f"{'='*60}")
@@ -26,29 +26,29 @@ class APITester:
             print(f"Response: {response.text}")
     
     def login(self, username: str, password: str) -> bool:
-        """Faz login e armazena o token"""
-        print(f"\nTentando login como: {username}")
+        """Logs in and stores the token"""
+        print(f"\nAttempting login as: {username}")
         
         response = requests.post(
             f"{BASE_URL}/auth/login",
             data={"username": username, "password": password}
         )
         
-        self.print_response(f"Login como {username}", response)
+        self.print_response(f"Login as {username}", response)
         
         if response.status_code == 200:
             data = response.json()
             self.token = data["access_token"]
-            print(f"Login bem-sucedido! Token obtido.")
+            print(f"Login successful! Token obtained.")
             return True
         else:
-            print(f"Falha no login!")
+            print(f"Login failed!")
             return False
     
     def get_current_user(self) -> Optional[Dict]:
-        """Obtém informações do usuário atual"""
+        """Gets current user information"""
         if not self.token:
-            print("Nenhum token disponível. Faça login primeiro.")
+            print("No token available. Please login first.")
             return None
         
         response = requests.get(
@@ -56,15 +56,15 @@ class APITester:
             headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        self.print_response("Usuário Atual", response)
+        self.print_response("Current User", response)
         
         if response.status_code == 200:
             self.current_user = response.json()
             return self.current_user
         return None
     
-    def register_user(self, username: str, email: str, password: str, role: str = "vendedor"):
-        """Registra um novo usuário"""
+    def register_user(self, username: str, email: str, password: str, role: str = "VENDEDOR"):
+        """Registers a new user"""
         response = requests.post(
             f"{BASE_URL}/auth/register",
             json={
@@ -75,20 +75,20 @@ class APITester:
             }
         )
         
-        self.print_response(f"Registrar usuário: {username} ({role})", response)
+        self.print_response(f"Register user: {username} ({role})", response)
         return response.status_code == 201
     
     def create_product(self, title: str, price: float, category_id: int):
-        """Tenta criar um produto (requer editor ou admin)"""
+        """Tries to create a product (requires editor or admin)"""
         if not self.token:
-            print("Nenhum token disponível. Faça login primeiro.")
+            print("No token available. Please login first.")
             return False
         
         response = requests.post(
             f"{BASE_URL}/products",
             json={
                 "title": title,
-                "description": "Produto de teste",
+                "description": "Test product",
                 "price": price,
                 "stock_quantity": 10,
                 "product_type": "PHYSICAL",
@@ -97,13 +97,13 @@ class APITester:
             headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        self.print_response(f"Criar produto: {title}", response)
+        self.print_response(f"Create product: {title}", response)
         return response.status_code == 200
     
     def delete_product(self, product_id: int):
-        """Tenta deletar um produto (requer admin)"""
+        """Tries to delete a product (requires admin)"""
         if not self.token:
-            print("Nenhum token disponível. Faça login primeiro.")
+            print("No token available. Please login first.")
             return False
         
         response = requests.delete(
@@ -111,13 +111,13 @@ class APITester:
             headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        self.print_response(f"Deletar produto ID: {product_id}", response)
+        self.print_response(f"Delete product ID: {product_id}", response)
         return response.status_code == 204
     
     def list_users(self):
-        """Lista todos os usuários (requer admin)"""
+        """Lists all users (requires admin)"""
         if not self.token:
-            print("Nenhum token disponível. Faça login primeiro.")
+            print("No token available. Please login first.")
             return False
         
         response = requests.get(
@@ -125,13 +125,13 @@ class APITester:
             headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        self.print_response("Listar todos os usuários", response)
+        self.print_response("List all users", response)
         return response.status_code == 200
     
     def checkout(self, items: list):
-        """Processa um pedido"""
+        """Processes an order"""
         if not self.token:
-            print("Nenhum token disponível. Faça login primeiro.")
+            print("No token available. Please login first.")
             return False
         
         response = requests.post(
@@ -144,133 +144,133 @@ class APITester:
         return response.status_code == 200
 
 def run_tests():
-    """Executa bateria de testes"""
+    """Runs test suite"""
     tester = APITester()
     
     print("\n" + "="*60)
-    print("INICIANDO TESTES DO SISTEMA DE AUTENTICACAO")
+    print("STARTING AUTHENTICATION SYSTEM TESTS")
     print("="*60)
     
-    # Teste 1: Login como Admin
+    # Test 1: Login as Admin
     print("\n" + "─"*60)
-    print("TESTE 1: Login como Administrador")
+    print("TEST 1: Login as Administrator")
     print("─"*60)
     if tester.login("admin", "admin123"):
         tester.get_current_user()
     
-    # Teste 2: Listar usuários (admin)
+    # Test 2: List users (admin)
     print("\n" + "─"*60)
-    print("TESTE 2: Listar usuarios (como admin)")
+    print("TEST 2: List users (as admin)")
     print("─"*60)
     tester.list_users()
     
-    # Teste 3: Criar produto (admin)
+    # Test 3: Create product (admin)
     print("\n" + "─"*60)
-    print("TESTE 3: Criar produto (como admin)")
+    print("TEST 3: Create product (as admin)")
     print("─"*60)
-    tester.create_product("Livro de Teste Admin", 99.90, 1)
+    tester.create_product("Admin Test Book", 99.90, 1)
     
-    # Teste 4: Registrar editor
+    # Test 4: Register editor
     print("\n" + "─"*60)
-    print("TESTE 4: Registrar novo editor")
+    print("TEST 4: Register new editor")
     print("─"*60)
-    tester.register_user("editor1", "editor@compia.com", "editor123", "editor")
+    tester.register_user("editor1", "editor@compia.com", "editor123", "EDITOR")
     
-    # Teste 5: Login como editor
+    # Test 5: Login as editor
     print("\n" + "─"*60)
-    print("TESTE 5: Login como Editor")
+    print("TEST 5: Login as Editor")
     print("─"*60)
     if tester.login("editor1", "editor123"):
         tester.get_current_user()
     
-    # Teste 6: Criar produto (editor)
+    # Test 6: Create product (editor)
     print("\n" + "─"*60)
-    print("TESTE 6: Criar produto (como editor)")
+    print("TEST 6: Create product (as editor)")
     print("─"*60)
-    tester.create_product("Livro de Teste Editor", 89.90, 1)
+    tester.create_product("Editor Test Book", 89.90, 1)
     
-    # Teste 7: Tentar deletar produto (editor - deve falhar)
+    # Test 7: Try to delete product (editor - should fail)
     print("\n" + "─"*60)
-    print("TESTE 7: Tentar deletar produto (como editor - deve FALHAR)")
+    print("TEST 7: Try to delete product (as editor - should FAIL)")
     print("─"*60)
     tester.delete_product(1)
     
-    # Teste 8: Tentar listar usuários (editor - deve falhar)
+    # Test 8: Try to list users (editor - should fail)
     print("\n" + "─"*60)
-    print("TESTE 8: Tentar listar usuarios (como editor - deve FALHAR)")
+    print("TEST 8: Try to list users (as editor - should FAIL)")
     print("─"*60)
     tester.list_users()
     
-    # Teste 9: Registrar vendedor
+    # Test 9: Register seller
     print("\n" + "─"*60)
-    print("TESTE 9: Registrar novo vendedor")
+    print("TEST 9: Register new seller")
     print("─"*60)
-    # Login como admin primeiro
+    # Login as admin first
     tester.login("admin", "admin123")
-    tester.register_user("vendedor1", "vendedor@compia.com", "vende123", "vendedor")
+    tester.register_user("vendedor1", "vendedor@compia.com", "vende123", "VENDEDOR")
     
-    # Teste 10: Login como vendedor
+    # Test 10: Login as seller
     print("\n" + "─"*60)
-    print("TESTE 10: Login como Vendedor")
+    print("TEST 10: Login as Seller")
     print("─"*60)
     if tester.login("vendedor1", "vende123"):
         tester.get_current_user()
     
-    # Teste 11: Tentar criar produto (vendedor - deve falhar)
+    # Test 11: Try to create product (seller - should fail)
     print("\n" + "─"*60)
-    print("TESTE 11: Tentar criar produto (como vendedor - deve FALHAR)")
+    print("TEST 11: Try to create product (as seller - should FAIL)")
     print("─"*60)
-    tester.create_product("Livro de Teste Vendedor", 79.90, 1)
+    tester.create_product("Seller Test Book", 79.90, 1)
     
-    # Teste 12: Fazer checkout (vendedor - deve funcionar)
+    # Test 12: Checkout (seller - should work)
     print("\n" + "─"*60)
-    print("TESTE 12: Fazer checkout (como vendedor - deve FUNCIONAR)")
+    print("TEST 12: Checkout (as seller - should WORK)")
     print("─"*60)
     tester.checkout([{"product_id": 1, "quantity": 1}])
     
-    # Teste 13: Registrar cliente (padrão)
+    # Test 13: Register client (default role)
     print("\n" + "─"*60)
-    print("TESTE 13: Registrar novo cliente (role padrao)")
+    print("TEST 13: Register new client (default role)")
     print("─"*60)
-    # Login como admin primeiro
+    # Login as admin first
     tester.login("admin", "admin123")
     tester.register_user("cliente1", "cliente@compia.com", "cliente123")
     
-    # Teste 14: Login como cliente
+    # Test 14: Login as client
     print("\n" + "─"*60)
-    print("TESTE 14: Login como Cliente")
+    print("TEST 14: Login as Client")
     print("─"*60)
     if tester.login("cliente1", "cliente123"):
         tester.get_current_user()
     
-    # Teste 15: Cliente fazer checkout (deve funcionar)
+    # Test 15: Client checkout (should work)
     print("\n" + "─"*60)
-    print("TESTE 15: Cliente fazer checkout (deve FUNCIONAR)")
+    print("TEST 15: Client checkout (should WORK)")
     print("─"*60)
     tester.checkout([{"product_id": 1, "quantity": 1}])
     
-    # Teste 16: Cliente tentar criar produto (deve falhar)
+    # Test 16: Client try to create product (should fail)
     print("\n" + "─"*60)
-    print("TESTE 16: Cliente tentar criar produto (deve FALHAR)")
+    print("TEST 16: Client try to create product (should FAIL)")
     print("─"*60)
-    tester.create_product("Livro de Teste Cliente", 69.90, 1)
+    tester.create_product("Client Test Book", 69.90, 1)
     
     print("\n" + "="*60)
-    print("TESTES CONCLUIDOS!")
+    print("TESTS COMPLETED!")
     print("="*60)
-    print("\nResumo esperado:")
-    print("  Admin: Pode fazer tudo")
-    print("  Editor: Pode criar/editar produtos, mas nao deletar ou gerenciar usuarios")
-    print("  Vendedor: Pode fazer checkout, mas nao gerenciar produtos")
-    print("  Cliente: Pode ver produtos e fazer checkout, mas nao gerenciar conteudo")
+    print("\nExpected summary:")
+    print("  Admin: Can do everything")
+    print("  Editor: Can create/edit products, but not delete or manage users")
+    print("  Seller: Can checkout, but not manage products")
+    print("  Client: Can view products and checkout, but not manage content")
     print("\n")
 
 if __name__ == "__main__":
     try:
         run_tests()
     except requests.exceptions.ConnectionError:
-        print("\nERRO: Nao foi possivel conectar ao servidor!")
-        print("   Certifique-se de que o servidor esta rodando em http://localhost:8000")
-        print("   Execute: uvicorn main:app --reload")
+        print("\nERROR: Could not connect to server!")
+        print("   Make sure the server is running at http://localhost:8000")
+        print("   Run: uvicorn main:app --reload")
     except Exception as e:
-        print(f"\nERRO: {e}")
+        print(f"\nERROR: {e}")
