@@ -22,11 +22,41 @@ export const productService = {
     delete: async (id: number) => {
         await api.delete(`/products/${id}`);
     },
-    checkout: async (items: { product_id: number; quantity: number }[]) => {
-        const response = await api.post('/orders/checkout', { items });
-        return response.data;
-    }
 };
+
+export type PaymentMethod = 'CARD' | 'PIX';
+
+export const orderService = {
+    checkout: async (items: { product_id: number; quantity: number }[], payment_method: PaymentMethod) => {
+        const response = await api.post<{ order_id: number; message: string; total_amount: number }>(
+            '/orders/checkout',
+            { items, payment_method }
+        );
+        return response.data;
+    },
+    list: async () => {
+        const response = await api.get<OrderDetail[]>('/orders/');
+        return response.data;
+    },
+    get: async (id: number) => {
+        const response = await api.get<OrderDetail>(`/orders/${id}`);
+        return response.data;
+    },
+};
+
+export interface OrderItemResponse {
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+}
+
+export interface OrderDetail {
+    id: number;
+    total_amount: number;
+    payment_method: string;
+    created_at: string;
+    items: OrderItemResponse[];
+}
 
 export const categoryService = {
     getAll: async () => {

@@ -3,7 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 
 const CartPage = () => {
-    const { cartItems, removeFromCart, clearCart, getCartTotal, checkout } = useCart();
+    const { cartItems, removeFromCart, clearCart, getCartTotal } = useCart();
     const { user } = useAuth();
 
     if (cartItems.length === 0) {
@@ -63,12 +63,18 @@ const CartPage = () => {
                     <p className="text-xl font-bold text-gray-900 mb-2">
                         Total: R$ {getCartTotal().toFixed(2)}
                     </p>
-                    <button
-                        onClick={checkout}
-                        className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow"
-                    >
-                        Finalizar Compra
-                    </button>
+                    {user ? (
+                        <Link
+                            to="/checkout"
+                            className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded shadow"
+                        >
+                            Ir para pagamento
+                        </Link>
+                    ) : (
+                        <p className="text-sm text-gray-600">
+                            <Link to="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">Faça login</Link> para finalizar a compra.
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

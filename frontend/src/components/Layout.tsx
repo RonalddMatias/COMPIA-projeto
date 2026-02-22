@@ -41,7 +41,10 @@ const Layout = () => {
                         <div className="flex items-center space-x-6">
                             <nav className="flex space-x-4 items-center">
                                 {user && (
-                                    <Link to="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
+                                    <>
+                                        <Link to="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
+                                        <Link to="/orders" className="text-gray-600 hover:text-gray-900">Meus pedidos</Link>
+                                    </>
                                 )}
                                 
                                 <Link to="/products" className="text-gray-600 hover:text-gray-900">Produtos</Link>

@@ -6,6 +6,9 @@ import ProductForm from './pages/ProductForm';
 import CategoryList from './pages/CategoryList';
 import CategoryForm from './pages/CategoryForm';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
+import MyOrdersPage from './pages/MyOrdersPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -40,8 +43,18 @@ function App() {
                 }
               />
               
-              {/* Rota pública - carrinho */}
+              {/* Carrinho e checkout (mock) */}
               <Route path="cart" element={<CartPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="order-success" element={<OrderSuccessPage />} />
+              <Route
+                path="orders"
+                element={
+                  <ProtectedRoute>
+                    <MyOrdersPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Rotas para Vendedor e Admin */}
               <Route
