@@ -73,68 +73,50 @@ const UserManagementPage = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center">
-                <div className="text-gray-600">Carregando usuários...</div>
+            <div className="flex justify-center py-16">
+                <div className="w-10 h-10 border-4 border-teal-500/30 border-t-teal-600 rounded-full animate-spin" />
             </div>
         );
     }
 
     return (
         <div>
-            <div className="mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Gerenciamento de Usuários</h2>
-                <p className="mt-1 text-sm text-gray-600">
-                    Gerencie roles e status dos usuários da plataforma
-                </p>
+            <div className="mb-8">
+                <h2 className="text-3xl font-bold text-stone-800">Gerenciamento de Usuários</h2>
+                <p className="mt-1 text-sm text-stone-500">Gerencie roles e status dos usuários da plataforma</p>
             </div>
 
             {error && (
-                <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                    {error}
-                </div>
+                <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl font-medium">{error}</div>
             )}
 
-            <div className="bg-white shadow overflow-hidden rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+            <div className="bg-white shadow-md overflow-hidden rounded-2xl border border-stone-200/80">
+                <table className="min-w-full divide-y divide-stone-200">
+                    <thead className="bg-stone-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Usuário
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Role
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Criado em
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ações
-                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider">Usuário</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider">Email</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider">Role</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider">Criado em</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-stone-600 uppercase tracking-wider">Ações</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-stone-100">
                         {users.map((user) => (
-                            <tr key={user.id}>
+                            <tr key={user.id} className="hover:bg-stone-50/50">
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">{user.username}</div>
+                                    <div className="text-sm font-medium text-stone-800">{user.username}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{user.email}</div>
+                                    <div className="text-sm text-stone-500">{user.email}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <select
                                         value={user.role}
                                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
                                         disabled={currentUser?.id === user.id}
-                                        className={`text-xs font-semibold rounded-full px-3 py-1 ${getRoleBadge(user.role)} ${
-                                            currentUser?.id === user.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                                        }`}
+                                        className={`text-xs font-semibold rounded-full px-3 py-1 ${getRoleBadge(user.role)} ${currentUser?.id === user.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         <option value={UserRole.CLIENTE}>Cliente</option>
                                         <option value={UserRole.VENDEDOR}>Vendedor</option>
@@ -142,30 +124,20 @@ const UserManagementPage = () => {
                                     </select>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                            user.is_active
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }`}
-                                    >
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}>
                                         {user.is_active ? 'Ativo' : 'Inativo'}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-stone-500">
                                     {new Date(user.created_at).toLocaleDateString('pt-BR')}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     {currentUser?.id === user.id ? (
-                                        <span className="text-gray-400 italic">Você</span>
+                                        <span className="text-stone-400 italic">Você</span>
                                     ) : (
                                         <button
                                             onClick={() => handleToggleActive(user)}
-                                            className={`${
-                                                user.is_active
-                                                    ? 'text-red-600 hover:text-red-900'
-                                                    : 'text-green-600 hover:text-green-900'
-                                            }`}
+                                            className={user.is_active ? 'text-red-600 hover:text-red-700 font-medium' : 'text-teal-600 hover:text-teal-700 font-medium'}
                                         >
                                             {user.is_active ? 'Desativar' : 'Ativar'}
                                         </button>
@@ -177,9 +149,7 @@ const UserManagementPage = () => {
                 </table>
             </div>
 
-            <div className="mt-4 text-sm text-gray-600">
-                Total de usuários: {users.length}
-            </div>
+            <div className="mt-4 text-sm text-stone-500 font-medium">Total de usuários: {users.length}</div>
         </div>
     );
 };

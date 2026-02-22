@@ -45,7 +45,8 @@ class Product(Base):
     stock_quantity = Column(Integer, default=0)
     image_url = Column(String, nullable=True)
     product_type = Column(Enum(ProductType), default=ProductType.PHYSICAL, nullable=False)
-    
+    download_url = Column(String, nullable=True)  # para e-books: link de download
+
     category_id = Column(Integer, ForeignKey("categories.id"))
     category = relationship("Category", back_populates="products")
 
@@ -62,6 +63,12 @@ class OrderStatus(str, enum.Enum):
     PAID = "PAID"  # mock: pedido já nasce pago
 
 
+class DeliveryType(str, enum.Enum):
+    SHIPPING = "SHIPPING"   # envio por correios/transportadora
+    PICKUP = "PICKUP"       # retirada no local
+    DIGITAL = "DIGITAL"     # e-book / entrega digital
+
+
 class Order(Base):
     __tablename__ = "orders"
 
@@ -70,6 +77,8 @@ class Order(Base):
     status = Column(Enum(OrderStatus), default=OrderStatus.PAID, nullable=False)
     total_amount = Column(Float, nullable=False)
     payment_method = Column(Enum(PaymentMethod), nullable=False)
+    delivery_type = Column(Enum(DeliveryType), default=DeliveryType.SHIPPING, nullable=False)
+    shipping_address = Column(Text, nullable=True)  # JSON: {street, number, complement, neighborhood, city, state, zip}
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     items = relationship("OrderItem", back_populates="order")
@@ -83,5 +92,7 @@ class OrderItem(Base):
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Float, nullable=False)
+    product_title = Column(String, nullable=True)  # cópia do nome no momento da compra
+    download_url = Column(String, nullable=True)  # para e-book: link enviado ao cliente
 
     order = relationship("Order", back_populates="items")

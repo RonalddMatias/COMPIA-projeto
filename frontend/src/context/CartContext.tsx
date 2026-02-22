@@ -13,6 +13,7 @@ interface CartContextType {
     clearCart: () => void;
     getCartTotal: () => number;
     checkout: () => Promise<void>;
+    cartMessage: string | null;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -22,6 +23,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const storedCart = localStorage.getItem('cart');
         return storedCart ? JSON.parse(storedCart) : [];
     });
+    const [cartMessage, setCartMessage] = useState<string | null>(null);
 
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
@@ -50,6 +52,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             return [...prevItems, { ...product, quantity: 1 }];
         });
+
+        setCartMessage(`${product.title} adicionado ao carrinho`);
+        setTimeout(() => setCartMessage(null), 2500);
     };
 
     const removeFromCart = (productId: number) => {
@@ -98,6 +103,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 clearCart,
                 getCartTotal,
                 checkout,
+                cartMessage,
             }}
         >
             {children}

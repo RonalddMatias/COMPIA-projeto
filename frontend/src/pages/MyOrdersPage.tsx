@@ -25,35 +25,40 @@ const MyOrdersPage = () => {
     if (!user) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-600">Faça login para ver seus pedidos.</p>
-                <Link to="/login" className="text-indigo-600 hover:text-indigo-800 mt-2 inline-block">Login</Link>
+                <p className="text-stone-500">Faça login para ver seus pedidos.</p>
+                <Link to="/login" className="mt-2 inline-block font-semibold text-teal-600 hover:text-teal-700">Entrar</Link>
             </div>
         );
     }
 
-    if (loading) return <div className="py-8">Carregando pedidos...</div>;
+    if (loading) return (
+        <div className="flex justify-center py-16">
+            <div className="w-10 h-10 border-4 border-teal-500/30 border-t-teal-600 rounded-full animate-spin" />
+        </div>
+    );
 
     return (
         <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold mb-6">Meus pedidos</h2>
+            <h2 className="text-3xl font-bold text-stone-800 mb-8">Meus pedidos</h2>
             {orders.length === 0 ? (
-                <p className="text-gray-600">Você ainda não fez nenhum pedido.</p>
+                <div className="bg-white rounded-2xl shadow-md border border-stone-200/80 p-12 text-center">
+                    <p className="text-stone-500 font-medium">Você ainda não fez nenhum pedido.</p>
+                    <Link to="/products" className="mt-4 inline-block font-semibold text-teal-600 hover:text-teal-700">Ver catálogo</Link>
+                </div>
             ) : (
                 <ul className="space-y-4">
-                    {orders.map((order) => (
-                        <li key={order.id} className="bg-white shadow rounded-lg p-4">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <p className="font-semibold text-gray-900">Pedido #{order.id}</p>
-                                    <p className="text-sm text-gray-500">
-                                        {new Date(order.created_at).toLocaleDateString('pt-BR')} · {order.payment_method === 'CARD' ? 'Cartão' : 'PIX'}
-                                    </p>
+                    {orders.map((order, index) => (
+                        <li key={order.id}>
+                            <Link to={`/orders/${order.id}`} className="block bg-white rounded-2xl shadow-md border border-stone-200/80 p-5 hover:shadow-lg hover:border-teal-200/60 transition-all">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="font-bold text-stone-800">Pedido nº {orders.length - index}</p>
+                                        <p className="text-sm text-stone-500 mt-0.5">{new Date(order.created_at).toLocaleDateString('pt-BR')} · {order.payment_method === 'CARD' ? 'Cartão' : 'PIX'}</p>
+                                    </div>
+                                    <p className="font-bold text-teal-700">R$ {order.total_amount.toFixed(2)}</p>
                                 </div>
-                                <p className="font-bold text-gray-900">R$ {order.total_amount.toFixed(2)}</p>
-                            </div>
-                            <p className="text-sm text-gray-600 mt-1">
-                                {order.items.length} item(ns)
-                            </p>
+                                <p className="text-sm text-stone-500 mt-2">{order.items.length} item(ns) · Clique para ver detalhes</p>
+                            </Link>
                         </li>
                     ))}
                 </ul>

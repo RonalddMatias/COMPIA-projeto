@@ -22,6 +22,7 @@ export interface Product {
     image_url?: string;
     product_type: ProductType;
     category_id: number;
+    download_url?: string;
     category?: Category;
     created_at: string;
     updated_at?: string;
@@ -33,6 +34,7 @@ export interface ProductCreate {
     price: number;
     stock_quantity: number;
     image_url?: string;
+    download_url?: string;
     product_type: ProductType;
     category_id: number;
 }

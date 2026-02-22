@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types';
 
 const Layout = () => {
-    const { cartItems } = useCart();
+    const { cartItems, cartMessage } = useCart();
     const { user, logout, isEditor, isAdmin } = useAuth();
     const navigate = useNavigate();
 
@@ -15,9 +15,9 @@ const Layout = () => {
 
     const getRoleBadge = (role: UserRole) => {
         const badges = {
-            [UserRole.ADMIN]: 'bg-purple-100 text-purple-800',
-            [UserRole.VENDEDOR]: 'bg-green-100 text-green-800',
-            [UserRole.CLIENTE]: 'bg-gray-100 text-gray-800',
+            [UserRole.ADMIN]: 'bg-amber-400/20 text-amber-800 border border-amber-300/50',
+            [UserRole.VENDEDOR]: 'bg-emerald-400/20 text-emerald-800 border border-emerald-300/50',
+            [UserRole.CLIENTE]: 'bg-stone-200/80 text-stone-700 border border-stone-300/50',
         };
         const labels = {
             [UserRole.ADMIN]: 'Admin',
@@ -25,78 +25,89 @@ const Layout = () => {
             [UserRole.CLIENTE]: 'Cliente',
         };
         return (
-            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${badges[role]}`}>
+            <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full border ${badges[role]}`}>
                 {labels[role]}
             </span>
         );
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50 flex flex-col">
-            <header className="bg-white shadow">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex justify-between items-center">
-                        <h1 className="text-xl font-bold text-gray-900">COMPIA Editora</h1>
-                        
-                        <div className="flex items-center space-x-6">
-                            <nav className="flex space-x-4 items-center">
-                                {user && (
-                                    <>
-                                        <Link to="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</Link>
-                                        <Link to="/orders" className="text-gray-600 hover:text-gray-900">Meus pedidos</Link>
-                                    </>
-                                )}
-                                
-                                <Link to="/products" className="text-gray-600 hover:text-gray-900">Produtos</Link>
-                                
-                                <Link to="/categories" className="text-gray-600 hover:text-gray-900">Categorias</Link>
-                                
-                                {isAdmin && (
-                                    <Link to="/users" className="text-gray-600 hover:text-gray-900">Usuários</Link>
-                                )}
-                                
-                                <Link to="/cart" className="text-gray-600 hover:text-gray-900 flex items-center">
-                                    Carrinho
-                                    {cartItems.length > 0 && (
-                                        <span className="ml-1 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs">
-                                            {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-                                        </span>
-                                    )}
-                                </Link>
-                            </nav>
+    const navLinkClass = "text-teal-100/90 hover:text-white font-medium text-sm transition-colors py-2 px-3 rounded-lg hover:bg-white/10";
+    const navLinkClassActive = "text-white bg-white/15";
 
+    return (
+        <div className="min-h-screen flex flex-col">
+            {cartMessage && (
+                <div className="sticky top-0 z-50 bg-teal-600 text-white text-center py-3 px-4 text-sm font-medium shadow-lg border-b border-teal-700/50">
+                    ✓ {cartMessage}
+                </div>
+            )}
+            <header className="bg-gradient-to-r from-teal-700 via-teal-600 to-teal-700 text-white shadow-xl border-b border-teal-800/30">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                    <div className="flex justify-between items-center flex-wrap gap-4">
+                        <Link to="/products" className="flex items-center gap-2">
+                            <span className="text-2xl font-bold tracking-tight">COMPIA Editora</span>
+                        </Link>
+
+                        <nav className="flex flex-wrap items-center gap-1 sm:gap-2">
+                            {user && (
+                                <>
+                                    <Link to="/dashboard" className={navLinkClass}>Dashboard</Link>
+                                    <Link to="/orders" className={navLinkClass}>Meus pedidos</Link>
+                                </>
+                            )}
+                            <Link to="/products" className={navLinkClass}>Produtos</Link>
+                            <Link to="/categories" className={navLinkClass}>Categorias</Link>
+                            {isAdmin && (
+                                <Link to="/users" className={navLinkClass}>Usuários</Link>
+                            )}
+                            <Link to="/cart" className="flex items-center gap-1.5 font-medium text-sm py-2 px-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+                                Carrinho
+                                {cartItems.length > 0 && (
+                                    <span className="bg-amber-400 text-teal-900 rounded-full min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center text-xs font-bold">
+                                        {cartItems.reduce((acc, item) => acc + item.quantity, 0)}
+                                    </span>
+                                )}
+                            </Link>
+                        </nav>
+
+                        <div className="flex items-center gap-3">
                             {user ? (
-                                <div className="flex items-center space-x-4">
-                                    <div className="text-right">
-                                        <div className="text-sm font-medium text-gray-900">{user.username}</div>
-                                        <div className="text-xs text-gray-500">{user.email}</div>
+                                <>
+                                    <div className="text-right hidden sm:block">
+                                        <div className="text-sm font-semibold text-white">{user.username}</div>
+                                        <div className="text-xs text-teal-200">{user.email}</div>
                                     </div>
                                     {user.role !== UserRole.CLIENTE && getRoleBadge(user.role)}
                                     <button
                                         onClick={handleLogout}
-                                        className="text-sm text-gray-600 hover:text-gray-900 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-50"
+                                        className="text-sm font-medium text-teal-100 hover:text-white py-2 px-4 rounded-lg border border-white/30 hover:bg-white/10 transition-colors"
                                     >
                                         Sair
                                     </button>
-                                </div>
+                                </>
                             ) : (
                                 <Link
                                     to="/login"
-                                    className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                                    className="inline-flex items-center font-semibold text-sm bg-white text-teal-700 py-2 px-5 rounded-lg hover:bg-teal-50 shadow-md transition-all"
                                 >
-                                    Faça seu login
+                                    Entrar
                                 </Link>
                             )}
                         </div>
                     </div>
                 </div>
             </header>
+
             <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <Outlet />
             </main>
-            <footer className="bg-white border-t border-gray-200 mt-auto">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-center text-sm text-gray-500">
-                    &copy; 2026 COMPIA Editora. Todos os direitos reservados.
+
+            <footer className="mt-auto bg-stone-800 text-stone-300 border-t border-stone-700/50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <span className="font-semibold text-white text-lg">COMPIA Editora</span>
+                        <p className="text-sm">© 2026 COMPIA Editora. Todos os direitos reservados.</p>
+                    </div>
                 </div>
             </footer>
         </div>
@@ -104,4 +115,3 @@ const Layout = () => {
 };
 
 export default Layout;
-

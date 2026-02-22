@@ -70,6 +70,7 @@ class ProductBase(BaseModel):
     image_url: Optional[str] = None
     product_type: ProductType = ProductType.PHYSICAL
     category_id: int
+    download_url: Optional[str] = None  # para e-book: link de download
 
 class ProductCreate(ProductBase):
     pass
@@ -82,6 +83,7 @@ class ProductUpdate(BaseModel):
     image_url: Optional[str] = None
     product_type: Optional[ProductType] = None
     category_id: Optional[int] = None
+    download_url: Optional[str] = None
 
 class Product(ProductBase):
     id: int
@@ -92,7 +94,7 @@ class Product(ProductBase):
     class Config:
         from_attributes = True
 
-# Order Schemas (mock payment)
+# Order Schemas (mock payment + entrega)
 class OrderItemInput(BaseModel):
     product_id: int
     quantity: int
@@ -103,9 +105,27 @@ class PaymentMethod(str, Enum):
     PIX = "PIX"
 
 
+class DeliveryType(str, Enum):
+    SHIPPING = "SHIPPING"
+    PICKUP = "PICKUP"
+    DIGITAL = "DIGITAL"
+
+
+class ShippingAddressInput(BaseModel):
+    street: str
+    number: str
+    complement: Optional[str] = None
+    neighborhood: str
+    city: str
+    state: str
+    zip: str
+
+
 class OrderCreate(BaseModel):
     items: List[OrderItemInput]
     payment_method: PaymentMethod = PaymentMethod.CARD
+    delivery_type: DeliveryType = DeliveryType.SHIPPING
+    shipping_address: Optional[ShippingAddressInput] = None
 
 
 class OrderResponse(BaseModel):
@@ -116,14 +136,18 @@ class OrderResponse(BaseModel):
 
 class OrderItemResponse(BaseModel):
     product_id: int
+    product_title: Optional[str] = None
     quantity: int
     unit_price: float
+    download_url: Optional[str] = None  # para e-book: link para o cliente
 
 
 class OrderDetail(BaseModel):
     id: int
     total_amount: float
     payment_method: str
+    delivery_type: str
+    shipping_address: Optional[dict] = None
     created_at: datetime
     items: List[OrderItemResponse]
 

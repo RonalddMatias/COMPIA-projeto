@@ -51,56 +51,26 @@ const CategoryForm = () => {
 
     return (
         <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">{isEditMode ? 'Editar Categoria' : 'Nova Categoria'}</h2>
+            <h2 className="text-3xl font-bold text-stone-800 mb-8">{isEditMode ? 'Editar Categoria' : 'Nova Categoria'}</h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6 bg-white shadow sm:rounded-lg p-6">
+            <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-2xl shadow-md border border-stone-200/80 p-8">
                 <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome</label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
+                    <label htmlFor="name" className="block text-sm font-medium text-stone-700">Nome</label>
+                    <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} required className="mt-1 block w-full border border-stone-300 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
                 </div>
-
                 <div>
-                    <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700">URL da Imagem de Capa</label>
-                    <input
-                        type="url"
-                        id="imageUrl"
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="https://exemplo.com/imagem.jpg"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
+                    <label htmlFor="imageUrl" className="block text-sm font-medium text-stone-700">URL da Imagem de Capa</label>
+                    <input type="url" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://exemplo.com/imagem.jpg" className="mt-1 block w-full border border-stone-300 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
                 </div>
-
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Descrição</label>
-                    <textarea
-                        id="description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows={3}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
+                    <label htmlFor="description" className="block text-sm font-medium text-stone-700">Descrição</label>
+                    <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="mt-1 block w-full border border-stone-300 rounded-xl py-2.5 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm" />
                 </div>
-
-                <div className="flex justify-end space-x-3">
-                    <button
-                        type="button"
-                        onClick={() => navigate('/categories')}
-                        className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
+                <div className="flex justify-end space-x-3 pt-2">
+                    <button type="button" onClick={() => navigate('/categories')} className="bg-white py-2.5 px-5 border border-stone-300 rounded-xl text-stone-700 font-medium hover:bg-stone-50 focus:ring-2 focus:ring-teal-500">
                         Cancelar
                     </button>
-                    <button
-                        type="submit"
-                        className="bg-indigo-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
+                    <button type="submit" className="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md focus:ring-2 focus:ring-teal-500">
                         Salvar
                     </button>
                 </div>

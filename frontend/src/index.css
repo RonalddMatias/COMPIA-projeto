@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  background: linear-gradient(180deg, #f0fdfa 0%, #fafaf9 24%);
+  min-height: 100vh;
+  color: #1c1917;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
