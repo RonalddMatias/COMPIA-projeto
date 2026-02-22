@@ -51,7 +51,6 @@ const UserManagementPage = () => {
     const getRoleBadge = (role: UserRole) => {
         const badges = {
             [UserRole.ADMIN]: 'bg-purple-100 text-purple-800',
-            [UserRole.EDITOR]: 'bg-blue-100 text-blue-800',
             [UserRole.VENDEDOR]: 'bg-green-100 text-green-800',
             [UserRole.CLIENTE]: 'bg-gray-100 text-gray-800',
         };
@@ -122,7 +121,6 @@ const UserManagementPage = () => {
                                     >
                                         <option value={UserRole.CLIENTE}>Cliente</option>
                                         <option value={UserRole.VENDEDOR}>Vendedor</option>
-                                        <option value={UserRole.EDITOR}>Editor</option>
                                         <option value={UserRole.ADMIN}>Admin</option>
                                     </select>
                                 </td>
