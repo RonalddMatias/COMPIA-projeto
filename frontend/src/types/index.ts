@@ -40,7 +40,6 @@ export interface ProductCreate {
 // Auth Types
 export const UserRole = {
     ADMIN: "ADMIN",
-    EDITOR: "EDITOR",
     VENDEDOR: "VENDEDOR",
     CLIENTE: "CLIENTE"
 } as const;

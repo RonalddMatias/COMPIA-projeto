@@ -63,7 +63,7 @@ class APITester:
             return self.current_user
         return None
     
-    def register_user(self, username: str, email: str, password: str, role: str = "VENDEDOR"):
+    def register_user(self, username: str, email: str, password: str, role: str = "CLIENTE"):
         """Registers a new user"""
         response = requests.post(
             f"{BASE_URL}/auth/register",
@@ -79,7 +79,7 @@ class APITester:
         return response.status_code == 201
     
     def create_product(self, title: str, price: float, category_id: int):
-        """Tries to create a product (requires editor or admin)"""
+        """Tries to create a product (requires vendedor or admin)"""
         if not self.token:
             print("No token available. Please login first.")
             return False
@@ -101,7 +101,7 @@ class APITester:
         return response.status_code == 200
     
     def delete_product(self, product_id: int):
-        """Tries to delete a product (requires admin)"""
+        """Tries to delete a product (requires vendedor or admin)"""
         if not self.token:
             print("No token available. Please login first.")
             return False
@@ -170,88 +170,67 @@ def run_tests():
     print("─"*60)
     tester.create_product("Admin Test Book", 99.90, 1)
     
-    # Test 4: Register editor
+    # Test 4: Register vendedor
     print("\n" + "─"*60)
-    print("TEST 4: Register new editor")
+    print("TEST 4: Register new vendedor")
     print("─"*60)
-    tester.register_user("editor1", "editor@compia.com", "editor123", "EDITOR")
-    
-    # Test 5: Login as editor
-    print("\n" + "─"*60)
-    print("TEST 5: Login as Editor")
-    print("─"*60)
-    if tester.login("editor1", "editor123"):
-        tester.get_current_user()
-    
-    # Test 6: Create product (editor)
-    print("\n" + "─"*60)
-    print("TEST 6: Create product (as editor)")
-    print("─"*60)
-    tester.create_product("Editor Test Book", 89.90, 1)
-    
-    # Test 7: Try to delete product (editor - should fail)
-    print("\n" + "─"*60)
-    print("TEST 7: Try to delete product (as editor - should FAIL)")
-    print("─"*60)
-    tester.delete_product(1)
-    
-    # Test 8: Try to list users (editor - should fail)
-    print("\n" + "─"*60)
-    print("TEST 8: Try to list users (as editor - should FAIL)")
-    print("─"*60)
-    tester.list_users()
-    
-    # Test 9: Register seller
-    print("\n" + "─"*60)
-    print("TEST 9: Register new seller")
-    print("─"*60)
-    # Login as admin first
-    tester.login("admin", "admin123")
     tester.register_user("vendedor1", "vendedor@compia.com", "vende123", "VENDEDOR")
     
-    # Test 10: Login as seller
+    # Test 5: Login as vendedor
     print("\n" + "─"*60)
-    print("TEST 10: Login as Seller")
+    print("TEST 5: Login as Vendedor")
     print("─"*60)
     if tester.login("vendedor1", "vende123"):
         tester.get_current_user()
     
-    # Test 11: Try to create product (seller - should fail)
+    # Test 6: Create product (vendedor)
     print("\n" + "─"*60)
-    print("TEST 11: Try to create product (as seller - should FAIL)")
+    print("TEST 6: Create product (as vendedor - should WORK)")
     print("─"*60)
-    tester.create_product("Seller Test Book", 79.90, 1)
+    tester.create_product("Vendedor Test Book", 89.90, 1)
     
-    # Test 12: Checkout (seller - should work)
+    # Test 7: Delete product (vendedor - should work now)
     print("\n" + "─"*60)
-    print("TEST 12: Checkout (as seller - should WORK)")
+    print("TEST 7: Delete product (as vendedor - should WORK)")
+    print("─"*60)
+    tester.delete_product(1)
+    
+    # Test 8: Try to list users (vendedor - should fail)
+    print("\n" + "─"*60)
+    print("TEST 8: Try to list users (as vendedor - should FAIL)")
+    print("─"*60)
+    tester.list_users()
+    
+    # Test 9: Checkout (vendedor - should work)
+    print("\n" + "─"*60)
+    print("TEST 9: Checkout (as vendedor - should WORK)")
     print("─"*60)
     tester.checkout([{"product_id": 1, "quantity": 1}])
     
-    # Test 13: Register client (default role)
+    # Test 10: Register client (default role)
     print("\n" + "─"*60)
-    print("TEST 13: Register new client (default role)")
+    print("TEST 10: Register new client (default role)")
     print("─"*60)
     # Login as admin first
     tester.login("admin", "admin123")
-    tester.register_user("cliente1", "cliente@compia.com", "cliente123")
+    tester.register_user("cliente1", "cliente@compia.com", "cliente123", "CLIENTE")
     
-    # Test 14: Login as client
+    # Test 11: Login as client
     print("\n" + "─"*60)
-    print("TEST 14: Login as Client")
+    print("TEST 11: Login as Client")
     print("─"*60)
     if tester.login("cliente1", "cliente123"):
         tester.get_current_user()
     
-    # Test 15: Client checkout (should work)
+    # Test 12: Client checkout (should work)
     print("\n" + "─"*60)
-    print("TEST 15: Client checkout (should WORK)")
+    print("TEST 12: Client checkout (should WORK)")
     print("─"*60)
     tester.checkout([{"product_id": 1, "quantity": 1}])
     
-    # Test 16: Client try to create product (should fail)
+    # Test 13: Client try to create product (should fail)
     print("\n" + "─"*60)
-    print("TEST 16: Client try to create product (should FAIL)")
+    print("TEST 13: Client try to create product (should FAIL)")
     print("─"*60)
     tester.create_product("Client Test Book", 69.90, 1)
     
@@ -260,9 +239,8 @@ def run_tests():
     print("="*60)
     print("\nExpected summary:")
     print("  Admin: Can do everything")
-    print("  Editor: Can create/edit products, but not delete or manage users")
-    print("  Seller: Can checkout, but not manage products")
-    print("  Client: Can view products and checkout, but not manage content")
+    print("  Vendedor: Can create/edit/delete products and categories, but not manage users")
+    print("  Cliente: Can view products and checkout, but not manage content")
     print("\n")
 
 if __name__ == "__main__":

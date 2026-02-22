@@ -11,7 +11,6 @@ class ProductType(str, enum.Enum):
 
 class UserRole(str, enum.Enum):
     ADMIN = "ADMIN"
-    EDITOR = "EDITOR"
     VENDEDOR = "VENDEDOR"
     CLIENTE = "CLIENTE"
 

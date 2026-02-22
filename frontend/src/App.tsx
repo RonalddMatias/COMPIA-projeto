@@ -43,11 +43,11 @@ function App() {
               {/* Rota pública - carrinho */}
               <Route path="cart" element={<CartPage />} />
 
-              {/* Rotas para Editor e Admin */}
+              {/* Rotas para Vendedor e Admin */}
               <Route
                 path="products/new"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.EDITOR, UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={[UserRole.VENDEDOR, UserRole.ADMIN]}>
                     <ProductForm />
                   </ProtectedRoute>
                 }
@@ -55,7 +55,7 @@ function App() {
               <Route
                 path="products/:id"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.EDITOR, UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={[UserRole.VENDEDOR, UserRole.ADMIN]}>
                     <ProductForm />
                   </ProtectedRoute>
                 }
@@ -64,7 +64,7 @@ function App() {
               <Route
                 path="categories/new"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.EDITOR, UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={[UserRole.VENDEDOR, UserRole.ADMIN]}>
                     <CategoryForm />
                   </ProtectedRoute>
                 }
@@ -72,7 +72,7 @@ function App() {
               <Route
                 path="categories/edit/:id"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.EDITOR, UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={[UserRole.VENDEDOR, UserRole.ADMIN]}>
                     <CategoryForm />
                   </ProtectedRoute>
                 }

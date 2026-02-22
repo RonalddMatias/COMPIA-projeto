@@ -16,13 +16,11 @@ const Layout = () => {
     const getRoleBadge = (role: UserRole) => {
         const badges = {
             [UserRole.ADMIN]: 'bg-purple-100 text-purple-800',
-            [UserRole.EDITOR]: 'bg-blue-100 text-blue-800',
             [UserRole.VENDEDOR]: 'bg-green-100 text-green-800',
             [UserRole.CLIENTE]: 'bg-gray-100 text-gray-800',
         };
         const labels = {
             [UserRole.ADMIN]: 'Admin',
-            [UserRole.EDITOR]: 'Editor',
             [UserRole.VENDEDOR]: 'Vendedor',
             [UserRole.CLIENTE]: 'Cliente',
         };

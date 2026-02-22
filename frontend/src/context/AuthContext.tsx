@@ -89,8 +89,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isAuthenticated: !!user,
         hasRole,
         isAdmin: user?.role === UserRole.ADMIN,
-        isEditor: user?.role === UserRole.EDITOR || user?.role === UserRole.ADMIN,
-        isVendedor: user?.role === UserRole.VENDEDOR || user?.role === UserRole.EDITOR || user?.role === UserRole.ADMIN,
+        isEditor: user?.role === UserRole.VENDEDOR || user?.role === UserRole.ADMIN,
+        isVendedor: user?.role === UserRole.VENDEDOR || user?.role === UserRole.ADMIN,
         isCliente: !!user,
     };
 

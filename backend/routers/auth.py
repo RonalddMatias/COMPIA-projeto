@@ -108,6 +108,13 @@ async def update_user_role(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     
+    # Prevent admin from changing their own role
+    if user.id == current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You cannot change your own role"
+        )
+    
     user.role = role
     db.commit()
     db.refresh(user)
