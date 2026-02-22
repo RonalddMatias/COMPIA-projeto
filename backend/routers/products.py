@@ -19,7 +19,7 @@ def get_db():
 def create_product(
     product: schemas.ProductCreate, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.require_editor_or_admin)
+    current_user: models.User = Depends(auth.require_vendedor_or_admin)
 ):
     db_product = models.Product(**product.dict())
     db.add(db_product)
@@ -51,7 +51,7 @@ def update_product(
     product_id: int, 
     product: schemas.ProductCreate, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.require_editor_or_admin)
+    current_user: models.User = Depends(auth.require_vendedor_or_admin)
 ):
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if db_product is None:
@@ -68,7 +68,7 @@ def update_product(
 def delete_product(
     product_id: int, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.require_admin)
+    current_user: models.User = Depends(auth.require_vendedor_or_admin)
 ):
     db_product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if db_product is None:

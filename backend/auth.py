@@ -111,14 +111,14 @@ async def require_admin(
         )
     return current_user
 
-async def require_editor_or_admin(
+async def require_vendedor_or_admin(
     current_user: models.User = Depends(get_current_active_user)
 ) -> models.User:
-    """Requires user to be editor or admin"""
-    if current_user.role not in [models.UserRole.ADMIN, models.UserRole.EDITOR]:
+    """Requires user to be vendedor or admin"""
+    if current_user.role not in [models.UserRole.ADMIN, models.UserRole.VENDEDOR]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Insufficient permissions. Only editors and administrators can access this resource."
+            detail="Insufficient permissions. Only vendedores and administrators can access this resource."
         )
     return current_user
 

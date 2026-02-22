@@ -10,7 +10,6 @@ class ProductType(str, Enum):
 
 class UserRole(str, Enum):
     ADMIN = "ADMIN"
-    EDITOR = "EDITOR"
     VENDEDOR = "VENDEDOR"
     CLIENTE = "CLIENTE"
 

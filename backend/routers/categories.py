@@ -19,7 +19,7 @@ def get_db():
 def create_category(
     category: schemas.CategoryCreate, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.require_editor_or_admin)
+    current_user: models.User = Depends(auth.require_vendedor_or_admin)
 ):
     db_category = models.Category(**category.dict())
     db.add(db_category)
@@ -37,7 +37,7 @@ def update_category(
     category_id: int, 
     category: schemas.CategoryCreate, 
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(auth.require_editor_or_admin)
+    current_user: models.User = Depends(auth.require_vendedor_or_admin)
 ):
     db_category = db.query(models.Category).filter(models.Category.id == category_id).first()
     if db_category is None:
