@@ -1,15 +1,17 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 const CartPage = () => {
     const { cartItems, removeFromCart, clearCart, getCartTotal, checkout } = useCart();
+    const { user } = useAuth();
 
     if (cartItems.length === 0) {
         return (
             <div className="text-center py-12">
-                <h2 className="text-2xl font-bold mb-4">Seu carrinho está vazio</h2>
-                <Link to="/products" className="text-blue-600 hover:text-blue-800">
-                    Voltar para a loja
+                <h2 className="text-2xl font-bold mb-4">Seu carrinho está vazio.</h2>
+                <Link to={user ? "/products" : "/login"} className="text-blue-600 hover:text-blue-800">
+                    {user ? 'Voltar para a loja' : 'Faça login na sua conta'}
                 </Link>
             </div>
         );

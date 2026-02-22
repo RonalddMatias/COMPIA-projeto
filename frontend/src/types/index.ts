@@ -36,3 +36,39 @@ export interface ProductCreate {
     product_type: ProductType;
     category_id: number;
 }
+
+// Auth Types
+export const UserRole = {
+    ADMIN: "ADMIN",
+    EDITOR: "EDITOR",
+    VENDEDOR: "VENDEDOR",
+    CLIENTE: "CLIENTE"
+} as const;
+
+export type UserRole = typeof UserRole[keyof typeof UserRole];
+
+export interface User {
+    id: number;
+    username: string;
+    email: string;
+    role: UserRole;
+    is_active: boolean;
+    created_at: string;
+}
+
+export interface LoginRequest {
+    username: string;
+    password: string;
+}
+
+export interface RegisterRequest {
+    username: string;
+    email: string;
+    password: string;
+    role?: UserRole;
+}
+
+export interface AuthResponse {
+    access_token: string;
+    token_type: string;
+}
