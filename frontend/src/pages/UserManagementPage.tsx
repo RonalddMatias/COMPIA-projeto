@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { UserRole } from '../types';
 import type { User } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 const UserManagementPage = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const { user: currentUser } = useAuth();
 
     useEffect(() => {
         loadUsers();
@@ -27,6 +29,12 @@ const UserManagementPage = () => {
     };
 
     const handleRoleChange = async (userId: number, newRole: string) => {
+        // Previne que o admin altere sua própria role
+        if (currentUser && userId === currentUser.id) {
+            alert('Você não pode alterar sua própria role!');
+            return;
+        }
+        
         try {
             await authService.updateUserRole(userId, newRole);
             await loadUsers();
@@ -36,6 +44,12 @@ const UserManagementPage = () => {
     };
 
     const handleToggleActive = async (user: User) => {
+        // Previne que o admin desative sua própria conta
+        if (currentUser && user.id === currentUser.id) {
+            alert('Você não pode desativar sua própria conta!');
+            return;
+        }
+        
         try {
             if (user.is_active) {
                 await authService.deactivateUser(user.id);
@@ -117,7 +131,10 @@ const UserManagementPage = () => {
                                     <select
                                         value={user.role}
                                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                                        className={`text-xs font-semibold rounded-full px-3 py-1 ${getRoleBadge(user.role)}`}
+                                        disabled={currentUser?.id === user.id}
+                                        className={`text-xs font-semibold rounded-full px-3 py-1 ${getRoleBadge(user.role)} ${
+                                            currentUser?.id === user.id ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                                        }`}
                                     >
                                         <option value={UserRole.CLIENTE}>Cliente</option>
                                         <option value={UserRole.VENDEDOR}>Vendedor</option>
@@ -139,16 +156,20 @@ const UserManagementPage = () => {
                                     {new Date(user.created_at).toLocaleDateString('pt-BR')}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <button
-                                        onClick={() => handleToggleActive(user)}
-                                        className={`${
-                                            user.is_active
-                                                ? 'text-red-600 hover:text-red-900'
-                                                : 'text-green-600 hover:text-green-900'
-                                        }`}
-                                    >
-                                        {user.is_active ? 'Desativar' : 'Ativar'}
-                                    </button>
+                                    {currentUser?.id === user.id ? (
+                                        <span className="text-gray-400 italic">Você</span>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleToggleActive(user)}
+                                            className={`${
+                                                user.is_active
+                                                    ? 'text-red-600 hover:text-red-900'
+                                                    : 'text-green-600 hover:text-green-900'
+                                            }`}
+                                        >
+                                            {user.is_active ? 'Desativar' : 'Ativar'}
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}
