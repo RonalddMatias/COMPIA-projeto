@@ -93,14 +93,40 @@ class Product(ProductBase):
     class Config:
         from_attributes = True
 
-# Order Schemas
-class OrderItem(BaseModel):
+# Order Schemas (mock payment)
+class OrderItemInput(BaseModel):
     product_id: int
     quantity: int
 
+
+class PaymentMethod(str, Enum):
+    CARD = "CARD"
+    PIX = "PIX"
+
+
 class OrderCreate(BaseModel):
-    items: List[OrderItem]
+    items: List[OrderItemInput]
+    payment_method: PaymentMethod = PaymentMethod.CARD
+
 
 class OrderResponse(BaseModel):
+    order_id: int
     message: str
     total_amount: float
+
+
+class OrderItemResponse(BaseModel):
+    product_id: int
+    quantity: int
+    unit_price: float
+
+
+class OrderDetail(BaseModel):
+    id: int
+    total_amount: float
+    payment_method: str
+    created_at: datetime
+    items: List[OrderItemResponse]
+
+    class Config:
+        from_attributes = True
