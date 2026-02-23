@@ -10,6 +10,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
+import ActivityLogsPage from './pages/ActivityLogsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -106,6 +107,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
                     <UserManagementPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="activity-logs"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                    <ActivityLogsPage />
                   </ProtectedRoute>
                 }
               />

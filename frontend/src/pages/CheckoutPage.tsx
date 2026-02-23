@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { orderService, type PaymentMethod, type DeliveryType, type ShippingAddressInput } from '../services/dataService';
+import QRCode from 'qrcode';
 
 const CheckoutPage = () => {
     const { cartItems, getCartTotal, clearCart } = useCart();
@@ -12,6 +13,8 @@ const CheckoutPage = () => {
     const [deliveryType, setDeliveryType] = useState<DeliveryType>('SHIPPING');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+    const pixKey = 'compia-editora@pix.com.br';
 
     // Endereço (quando entrega = envio)
     const [street, setStreet] = useState('');
@@ -56,6 +59,22 @@ const CheckoutPage = () => {
     const [cardName, setCardName] = useState('');
     const [cardValid, setCardValid] = useState('');
     const [cardCvv, setCardCvv] = useState('');
+
+    // Gera QR Code quando o método de pagamento for PIX
+    useEffect(() => {
+        if (paymentMethod === 'PIX') {
+            QRCode.toDataURL(pixKey, {
+                width: 200,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            })
+                .then(url => setQrCodeUrl(url))
+                .catch(err => console.error('Erro ao gerar QR Code:', err));
+        }
+    }, [paymentMethod, pixKey]);
 
     if (!user) {
         return (
@@ -227,13 +246,19 @@ const CheckoutPage = () => {
                     <div className="bg-stone-50 rounded-2xl p-5 border border-stone-200/80 space-y-3">
                         <p className="text-xs text-stone-500">Escaneie o QR Code ou copie a chave PIX abaixo</p>
                         <div className="flex justify-center p-4 bg-white border-2 border-dashed border-stone-200 rounded-xl">
-                            <div className="w-40 h-40 bg-stone-100 rounded-xl flex items-center justify-center text-stone-500 text-sm text-center">QR Code PIX</div>
+                            {qrCodeUrl ? (
+                                <img src={qrCodeUrl} alt="QR Code PIX" className="w-40 h-40" />
+                            ) : (
+                                <div className="w-40 h-40 bg-stone-100 rounded-xl flex items-center justify-center text-stone-500 text-sm text-center">
+                                    Gerando QR Code...
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-stone-700 mb-1">Chave PIX (copiar)</label>
                             <div className="flex items-center gap-2">
-                                <code className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-sm">compia-editora@pix.com.br</code>
-                                <button type="button" className="text-sm font-semibold text-teal-600 hover:text-teal-700" onClick={() => navigator.clipboard.writeText('compia-editora@pix.com.br')}>Copiar</button>
+                                <code className="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-sm">{pixKey}</code>
+                                <button type="button" className="text-sm font-semibold text-teal-600 hover:text-teal-700" onClick={() => navigator.clipboard.writeText(pixKey)}>Copiar</button>
                             </div>
                         </div>
                     </div>

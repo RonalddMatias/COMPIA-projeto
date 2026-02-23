@@ -25,6 +25,18 @@ def create_category(
     db.add(db_category)
     db.commit()
     db.refresh(db_category)
+    
+    # Creation log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="CREATE",
+        resource="CATEGORY",
+        resource_id=db_category.id,
+        details=f"Created category: {db_category.name}"
+    )
+    
     return db_category
 
 @router.get("/", response_model=List[schemas.Category])
@@ -48,6 +60,18 @@ def update_category(
     
     db.commit()
     db.refresh(db_category)
+    
+    # update log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="UPDATE",
+        resource="CATEGORY",
+        resource_id=db_category.id,
+        details=f"Updated category: {db_category.name}"
+    )
+    
     return db_category
 
 @router.delete("/{category_id}", status_code=204)
@@ -67,6 +91,19 @@ def delete_category(
             detail="Cannot delete category with associated products. Please delete or reassign products first."
         )
 
+    category_name = db_category.name
     db.delete(db_category)
     db.commit()
+    
+    # deletion log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="DELETE",
+        resource="CATEGORY",
+        resource_id=category_id,
+        details=f"Deleted category: {category_name}"
+    )
+    
     return None

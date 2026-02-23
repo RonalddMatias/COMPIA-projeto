@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
 from typing import List
+import json
 
 import models
 import schemas
@@ -48,6 +49,17 @@ def register(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     
+    # register log
+    auth.log_activity(
+        db=db,
+        user_id=db_user.id,
+        username=db_user.username,
+        action="REGISTER",
+        resource="USER",
+        resource_id=db_user.id,
+        details=f"Role: {db_user.role.value}"
+    )
+    
     return db_user
 
 @router.post("/login", response_model=schemas.Token)
@@ -78,6 +90,16 @@ def login(
     access_token = auth.create_access_token(
         data={"sub": user.username, "role": user.role.value},
         expires_delta=access_token_expires
+    )
+    
+    # login log
+    auth.log_activity(
+        db=db,
+        user_id=user.id,
+        username=user.username,
+        action="LOGIN",
+        resource="USER",
+        resource_id=user.id
     )
     
     return {"access_token": access_token, "token_type": "bearer"}
@@ -115,9 +137,21 @@ async def update_user_role(
             detail="You cannot change your own role"
         )
     
+    old_role = user.role
     user.role = role
     db.commit()
     db.refresh(user)
+    
+    # changing role log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="UPDATE_ROLE",
+        resource="USER",
+        resource_id=user.id,
+        details=f"Changed {user.username} role from {old_role.value} to {role.value}"
+    )
     
     return user
 
@@ -142,6 +176,17 @@ async def deactivate_user(
     db.commit()
     db.refresh(user)
     
+    # deactivate log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="DEACTIVATE",
+        resource="USER",
+        resource_id=user.id,
+        details=f"Deactivated user: {user.username}"
+    )
+    
     return user
 
 @router.put("/users/{user_id}/activate", response_model=schemas.User)
@@ -158,6 +203,17 @@ async def activate_user(
     user.is_active = True
     db.commit()
     db.refresh(user)
+    
+    # activate log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="ACTIVATE",
+        resource="USER",
+        resource_id=user.id,
+        details=f"Activated user: {user.username}"
+    )
     
     return user
 
@@ -180,3 +236,27 @@ async def change_password(
     db.commit()
     
     return {"message": "Password changed successfully"}
+
+
+@router.get("/logs", response_model=List[schemas.ActivityLog])
+async def list_activity_logs(
+    skip: int = 0,
+    limit: int = 100,
+    action: str = None,
+    resource: str = None,
+    username: str = None,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(auth.require_admin)
+):
+    """List activity logs in the system (admin only)"""
+    query = db.query(models.ActivityLog)
+    
+    if action:
+        query = query.filter(models.ActivityLog.action == action)
+    if resource:
+        query = query.filter(models.ActivityLog.resource == resource)
+    if username:
+        query = query.filter(models.ActivityLog.username.ilike(f"%{username}%"))
+    
+    logs = query.order_by(models.ActivityLog.timestamp.desc()).offset(skip).limit(limit).all()
+    return logs

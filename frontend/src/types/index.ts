@@ -73,3 +73,16 @@ export interface AuthResponse {
     access_token: string;
     token_type: string;
 }
+
+// Activity Log Types
+export interface ActivityLog {
+    id: number;
+    user_id?: number;
+    username?: string;
+    action: string;
+    resource?: string;
+    resource_id?: number;
+    details?: string;
+    ip_address?: string;
+    timestamp: string;
+}
