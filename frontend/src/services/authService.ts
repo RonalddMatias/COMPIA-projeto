@@ -1,5 +1,5 @@
 import api from './api';
-import type { AuthResponse, LoginRequest, RegisterRequest, User } from '../types';
+import type { AuthResponse, LoginRequest, RegisterRequest, User, ActivityLog } from '../types';
 
 export const authService = {
     async login(credentials: LoginRequest): Promise<AuthResponse> {
@@ -76,5 +76,23 @@ export const authService = {
             }
         }
         return null;
+    },
+
+    async getActivityLogs(filters?: { 
+        skip?: number; 
+        limit?: number; 
+        action?: string; 
+        resource?: string; 
+        username?: string; 
+    }): Promise<ActivityLog[]> {
+        const params = new URLSearchParams();
+        if (filters?.skip !== undefined) params.append('skip', filters.skip.toString());
+        if (filters?.limit !== undefined) params.append('limit', filters.limit.toString());
+        if (filters?.action) params.append('action', filters.action);
+        if (filters?.resource) params.append('resource', filters.resource);
+        if (filters?.username) params.append('username', filters.username);
+        
+        const response = await api.get<ActivityLog[]>(`/auth/logs?${params.toString()}`);
+        return response.data;
     },
 };
