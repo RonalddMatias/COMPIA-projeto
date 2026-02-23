@@ -127,3 +127,44 @@ async def require_any_role(
 ) -> models.User:
     """Requires user to be authenticated (any role)"""
     return current_user
+
+
+# Activity Logging
+def log_activity(
+    db: Session,
+    user_id: Optional[int],
+    username: Optional[str],
+    action: str,
+    resource: Optional[str] = None,
+    resource_id: Optional[int] = None,
+    details: Optional[str] = None,
+    ip_address: Optional[str] = None
+):
+    """
+    Logs an activity in the system.
+
+    Args:
+        db: Database session
+        user_id: User ID (None for unauthenticated actions)
+        username: User's username
+        action: Type of action (LOGIN, LOGOUT, CREATE, UPDATE, DELETE, etc.)
+        resource: Type of resource (USER, PRODUCT, CATEGORY, ORDER, etc.)
+        resource_id: ID of the affected resource
+        details: Additional details in string/JSON format
+        ip_address: User's IP address
+    """
+    try:
+        log = models.ActivityLog(
+            user_id=user_id,
+            username=username,
+            action=action,
+            resource=resource,
+            resource_id=resource_id,
+            details=details,
+            ip_address=ip_address
+        )
+        db.add(log)
+        db.commit()
+    except Exception as e:
+        print(f"Erro ao registrar log: {e}")
+        db.rollback()

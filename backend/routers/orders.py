@@ -78,6 +78,18 @@ def checkout(
 
         db.commit()
         db.refresh(db_order)
+        
+        # checkout log
+        auth.log_activity(
+            db=db,
+            user_id=current_user.id,
+            username=current_user.username,
+            action="CHECKOUT",
+            resource="ORDER",
+            resource_id=db_order.id,
+            details=f"Order total: R$ {total_amount:.2f}, Payment: {order.payment_method.value}, Delivery: {order.delivery_type.value}"
+        )
+        
         return schemas.OrderResponse(
             order_id=db_order.id,
             message="Pedido realizado com sucesso (pagamento mockado).",

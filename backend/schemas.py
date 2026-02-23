@@ -153,3 +153,21 @@ class OrderDetail(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Activity Log Schemas
+class ActivityLogBase(BaseModel):
+    action: str
+    resource: Optional[str] = None
+    resource_id: Optional[int] = None
+    details: Optional[str] = None
+
+class ActivityLog(ActivityLogBase):
+    id: int
+    user_id: Optional[int] = None
+    username: Optional[str] = None
+    ip_address: Optional[str] = None
+    timestamp: datetime
+    
+    class Config:
+        from_attributes = True

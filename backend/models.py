@@ -96,3 +96,17 @@ class OrderItem(Base):
     download_url = Column(String, nullable=True)  # para e-book: link enviado ao cliente
 
     order = relationship("Order", back_populates="items")
+
+
+class ActivityLog(Base):
+    __tablename__ = "activity_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)  # nullable para ações sem usuário (ex: registro)
+    username = Column(String, nullable=True)  # cache do username para não precisar join
+    action = Column(String, nullable=False, index=True)  # LOGIN, LOGOUT, CREATE, UPDATE, DELETE, etc
+    resource = Column(String, nullable=True, index=True)  # USER, PRODUCT, CATEGORY, ORDER, etc
+    resource_id = Column(Integer, nullable=True)  # ID do recurso afetado
+    details = Column(Text, nullable=True)  # JSON com detalhes adicionais
+    ip_address = Column(String, nullable=True)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now(), index=True)

@@ -25,6 +25,18 @@ def create_product(
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
+    
+    # creation log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="CREATE",
+        resource="PRODUCT",
+        resource_id=db_product.id,
+        details=f"Created product: {db_product.title}"
+    )
+    
     return db_product
 
 @router.get("/", response_model=List[schemas.Product])
@@ -62,6 +74,18 @@ def update_product(
     
     db.commit()
     db.refresh(db_product)
+    
+    # update log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="UPDATE",
+        resource="PRODUCT",
+        resource_id=db_product.id,
+        details=f"Updated product: {db_product.title}"
+    )
+    
     return db_product
 
 @router.delete("/{product_id}", status_code=204)
@@ -74,6 +98,19 @@ def delete_product(
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    product_title = db_product.title
     db.delete(db_product)
     db.commit()
+    
+    # deletion log
+    auth.log_activity(
+        db=db,
+        user_id=current_user.id,
+        username=current_user.username,
+        action="DELETE",
+        resource="PRODUCT",
+        resource_id=product_id,
+        details=f"Deleted product: {product_title}"
+    )
+    
     return None
