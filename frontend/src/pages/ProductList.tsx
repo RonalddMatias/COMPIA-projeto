@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 
 const ProductList = () => {
     const { addToCart } = useCart();
-    const { isEditor, isAdmin } = useAuth();
+    const { isEditor } = useAuth();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchParams] = useSearchParams();

@@ -5,7 +5,7 @@ import { UserRole } from '../types';
 
 const Layout = () => {
     const { cartItems, cartMessage } = useCart();
-    const { user, logout, isEditor, isAdmin } = useAuth();
+    const { user, logout, isAdmin } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -32,7 +32,6 @@ const Layout = () => {
     };
 
     const navLinkClass = "text-teal-100/90 hover:text-white font-medium text-sm transition-colors py-2 px-3 rounded-lg hover:bg-white/10";
-    const navLinkClassActive = "text-white bg-white/15";
 
     return (
         <div className="min-h-screen flex flex-col">
