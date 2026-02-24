@@ -13,6 +13,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U compia_user -d compia_editora || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
 
   backend:
     build:
@@ -20,13 +26,14 @@ services:
       dockerfile: Dockerfile
     container_name: compia_backend
     restart: always
+    command: >
+      sh -c "python3 create_admin.py && uvicorn main:app --host 0.0.0.0 --port 8000"
     environment:
       DATABASE_URL: postgresql://compia_user:compia_password@db:5432/compia_editora
       CORS_ORIGINS: http://localhost:5173,http://150.165.85.80
     depends_on:
-      - db
-    ports:
-      - "8000:8000"
+      db:
+        condition: service_healthy
     networks:
       - app-net
 
@@ -35,7 +42,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://150.165.85.80:8000
+        VITE_API_URL: /api
     container_name: compia_frontend
     restart: always
     depends_on:
